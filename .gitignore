@@ -12,3 +12,4 @@ src/generated/
 *.log
 .vite/
 .claude/
+!.env.prod.example

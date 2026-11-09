@@ -21,7 +21,7 @@ WORKDIR /app
 RUN chown node:node /app
 USER node
 COPY --chown=node:node package.json package-lock.json ./
-RUN npm ci
+RUN npm ci --include=dev
 COPY --chown=node:node prisma.config.ts ./
 COPY --chown=node:node prisma ./prisma
 CMD ["npx", "prisma", "migrate", "deploy"]
