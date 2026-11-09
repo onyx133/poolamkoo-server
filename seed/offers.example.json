@@ -1,0 +1,36 @@
+{
+  "offers": [
+    {
+      "id": "o_example_savings",
+      "title_fa": "نمونه: حساب پس‌انداز آزمایشی",
+      "body_fa": "این یک پیشنهاد نمونه است و فقط برای آزمایش استفاده می‌شود.",
+      "cta_fa": "مشاهده",
+      "url": "https://example.com/offers/savings",
+      "bands": ["B1", "B2"],
+      "starts_at": "2026-01-01T00:00:00Z",
+      "expires_at": "2027-01-01T00:00:00Z"
+    },
+    {
+      "id": "o_example_invest",
+      "title_fa": "نمونه: آموزش سرمایه‌گذاری آزمایشی",
+      "body_fa": "متن نمونه برای نمایش یک پیشنهاد ویژه؛ این پیشنهاد واقعی نیست.",
+      "cta_fa": "بیشتر بدانید",
+      "url": "https://example.com/offers/invest",
+      "bands": ["B3", "B4", "B5"],
+      "starts_at": "2026-01-01T00:00:00Z",
+      "expires_at": "2027-06-30T00:00:00Z",
+      "active": true
+    },
+    {
+      "id": "o_example_all",
+      "title_fa": "نمونه: پیشنهاد برای همه",
+      "body_fa": "پیشنهاد نمونه‌ای که برای همهٔ بازه‌های درآمدی نمایش داده می‌شود.",
+      "cta_fa": "ورود",
+      "url": "https://example.com/offers/all",
+      "bands": ["B1", "B2", "B3", "B4", "B5"],
+      "starts_at": "2026-01-01T00:00:00Z",
+      "expires_at": "2026-12-31T20:30:00Z",
+      "active": false
+    }
+  ]
+}
