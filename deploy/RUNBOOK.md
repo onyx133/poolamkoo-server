@@ -158,13 +158,13 @@ Restore into an empty database: `dc exec -T db pg_restore -h 127.0.0.1 -p 5433 -
 
 ## Rotating secrets
 
-| Secret | Effect of rotating | How |
-|---|---|---|
-| `JWT_SECRET` | All access tokens become invalid. Apps get `401` and re-register on their next sync (no data loss, no user action). | Edit `deploy/.env`, `dc up -d`. |
-| `SERVER_PEPPER` | **Every install hash changes.** Existing rows can never be matched again: apps re-register as new installs, old rows (and their opt-in profiles) become orphans that nobody can erase, and users must re-consent to offers. Do this only after a suspected pepper leak, and then also run `TRUNCATE installs CASCADE` as the owner. | Edit, `dc up -d`, truncate. |
-| `APP_DB_PASSWORD` | API cannot connect until both sides agree. | `dc exec db psql -h 127.0.0.1 -p 5433 -U poolamkoo_owner -d poolamkoo -c "ALTER ROLE poolamkoo_app PASSWORD '...'"`, edit `deploy/.env`, `dc up -d api`. |
-| `POSTGRES_OWNER_PASSWORD` | Used by `migrate` and admin shells. | `ALTER ROLE` as above, edit `.env`. |
-| `RULEPACK_PUBLIC_KEY` | Imports verify against the new key; already-stored packs are untouched. The app must ship the new public key first. | See threat model. |
+| Secret                    | Effect of rotating                                                                                                                                                                                                                                                                                                                  | How                                                                                                                                                      |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `JWT_SECRET`              | All access tokens become invalid. Apps get `401` and re-register on their next sync (no data loss, no user action).                                                                                                                                                                                                                 | Edit `deploy/.env`, `dc up -d`.                                                                                                                          |
+| `SERVER_PEPPER`           | **Every install hash changes.** Existing rows can never be matched again: apps re-register as new installs, old rows (and their opt-in profiles) become orphans that nobody can erase, and users must re-consent to offers. Do this only after a suspected pepper leak, and then also run `TRUNCATE installs CASCADE` as the owner. | Edit, `dc up -d`, truncate.                                                                                                                              |
+| `APP_DB_PASSWORD`         | API cannot connect until both sides agree.                                                                                                                                                                                                                                                                                          | `dc exec db psql -h 127.0.0.1 -p 5433 -U poolamkoo_owner -d poolamkoo -c "ALTER ROLE poolamkoo_app PASSWORD '...'"`, edit `deploy/.env`, `dc up -d api`. |
+| `POSTGRES_OWNER_PASSWORD` | Used by `migrate` and admin shells.                                                                                                                                                                                                                                                                                                 | `ALTER ROLE` as above, edit `.env`.                                                                                                                      |
+| `RULEPACK_PUBLIC_KEY`     | Imports verify against the new key; already-stored packs are untouched. The app must ship the new public key first.                                                                                                                                                                                                                 | See threat model.                                                                                                                                        |
 
 Generate with `openssl rand -base64 48` (or `-hex 24` for DB passwords).
 
@@ -174,16 +174,16 @@ acme.sh renews from cron and runs the stored reload hook (`nginx -t && systemctl
 
 ## Troubleshooting
 
-| Symptom | Check |
-|---|---|
-| `502` from nginx | `dc ps`; `dc logs api`. The API listens on 127.0.0.1:3100 only. |
-| `api` exits at start with "Invalid configuration" | The log lists the offending variables (`SERVER_PEPPER`/`JWT_SECRET` need >= 32 bytes; `RULEPACK_PUBLIC_KEY` must be a 32-byte key in base64). |
-| `migrate` fails | `dc logs migrate`. Connection errors: is `db` healthy and listening on 5433 (`ss -ltn | grep 5433`)? |
-| `permission denied for table` in api logs | Role grants missing. `db-init` only runs on first volume init; apply its SQL by hand as the owner. |
-| `429` for real users | Many users behind one carrier NAT IP. Raise `RATE_LIMIT_MAX`. Check that `X-Forwarded-For` is set by nginx (otherwise everyone shares one key). |
-| Build cannot reach npm | The build must use `network: host`; confirm it is set and the host has outbound DNS. |
-| `nginx -t` fails on `listen ... http2` | nginx >= 1.25.1 prefers `http2 on;`; 1.24 requires the form used here. |
-| Container name or port clash | Another service owns the port. 3100 and 5433 were chosen to avoid existing ones; pick others in the compose file, nginx conf and `.env`. |
+| Symptom                                           | Check                                                                                                                                           |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `502` from nginx                                  | `dc ps`; `dc logs api`. The API listens on 127.0.0.1:3100 only.                                                                                 |
+| `api` exits at start with "Invalid configuration" | The log lists the offending variables (`SERVER_PEPPER`/`JWT_SECRET` need >= 32 bytes; `RULEPACK_PUBLIC_KEY` must be a 32-byte key in base64).   |
+| `migrate` fails                                   | `dc logs migrate`. Connection errors: is `db` healthy and listening on 5433 (`ss -ltn                                                           | grep 5433`)? |
+| `permission denied for table` in api logs         | Role grants missing. `db-init` only runs on first volume init; apply its SQL by hand as the owner.                                              |
+| `429` for real users                              | Many users behind one carrier NAT IP. Raise `RATE_LIMIT_MAX`. Check that `X-Forwarded-For` is set by nginx (otherwise everyone shares one key). |
+| Build cannot reach npm                            | The build must use `network: host`; confirm it is set and the host has outbound DNS.                                                            |
+| `nginx -t` fails on `listen ... http2`            | nginx >= 1.25.1 prefers `http2 on;`; 1.24 requires the form used here.                                                                          |
+| Container name or port clash                      | Another service owns the port. 3100 and 5433 were chosen to avoid existing ones; pick others in the compose file, nginx conf and `.env`.        |
 
 Logs: `dc logs -f api` (JSON, no IPs or bodies). nginx keeps no access log by design.
 
