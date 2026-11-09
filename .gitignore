@@ -11,3 +11,4 @@ src/generated/
 .tmp/
 *.log
 .vite/
+.claude/
