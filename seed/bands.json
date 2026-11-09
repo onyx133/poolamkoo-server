@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "currency": "IRR",
+  "bands": [
+    { "key": "B1", "max_monthly_net_income": 150000000 },
+    { "key": "B2", "max_monthly_net_income": 300000000 },
+    { "key": "B3", "max_monthly_net_income": 600000000 },
+    { "key": "B4", "max_monthly_net_income": 1200000000 },
+    { "key": "B5", "max_monthly_net_income": null }
+  ]
+}

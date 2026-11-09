@@ -1,0 +1,152 @@
+// Complete schema for every module. Snake_case in the DB via @map/@@map.
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Store {
+  bazaar
+  myket
+  play
+  direct
+
+  @@map("store")
+}
+
+enum IncomeBand {
+  B1
+  B2
+  B3
+  B4
+  B5
+
+  @@map("income_band")
+}
+
+enum CategoryKind {
+  expense
+  income
+  neutral
+
+  @@map("category_kind")
+}
+
+model Install {
+  idHash     String   @id @map("id_hash") @db.Char(64)
+  platform   String   @db.VarChar(16)
+  appVersion String   @map("app_version") @db.VarChar(32)
+  store      Store
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  lastSeenOn DateTime @map("last_seen_on") @db.Date
+
+  profile Profile?
+
+  @@map("installs")
+}
+
+model Profile {
+  installIdHash  String     @id @map("install_id_hash") @db.Char(64)
+  incomeBand     IncomeBand @map("income_band")
+  period         String     @db.VarChar(7)
+  consentVersion Int        @map("consent_version")
+  updatedAt      DateTime   @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  install Install @relation(fields: [installIdHash], references: [idHash], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+model BandTable {
+  version   Int      @id
+  currency  String   @db.VarChar(3)
+  // [{ key, max_monthly_net_income: number | null }], ascending; last may be null (unbounded)
+  bands     Json
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@map("band_tables")
+}
+
+model Offer {
+  id        String       @id @db.VarChar(64)
+  titleFa   String       @map("title_fa")
+  bodyFa    String       @map("body_fa")
+  ctaFa     String       @map("cta_fa")
+  url       String
+  bands     IncomeBand[]
+  startsAt  DateTime     @map("starts_at") @db.Timestamptz(3)
+  expiresAt DateTime     @map("expires_at") @db.Timestamptz(3)
+  active    Boolean      @default(true)
+
+  @@map("offers")
+}
+
+model Icon {
+  key      String @id
+  viewBoxW Int    @map("view_box_w")
+  viewBoxH Int    @map("view_box_h")
+  // [{ role: plate | glyph | accent, d }]
+  layers   Json
+
+  categories Category[]
+  merchants  Merchant[]
+
+  @@map("icons")
+}
+
+model Category {
+  key       String       @id
+  parentKey String?      @map("parent_key")
+  kind      CategoryKind
+  nameFa    String       @map("name_fa")
+  color     String       @db.VarChar(7)
+  iconKey   String       @map("icon_key")
+  sort      Int
+
+  parent    Category?  @relation("CategoryTree", fields: [parentKey], references: [key])
+  children  Category[] @relation("CategoryTree")
+  icon      Icon       @relation(fields: [iconKey], references: [key])
+  merchants Merchant[]
+
+  @@map("categories")
+}
+
+model Merchant {
+  key         String   @id
+  nameFa      String   @map("name_fa")
+  categoryKey String   @map("category_key")
+  iconKey     String   @map("icon_key")
+  keywords    String[]
+
+  category Category @relation(fields: [categoryKey], references: [key])
+  icon     Icon     @relation(fields: [iconKey], references: [key])
+
+  @@map("merchants")
+}
+
+model CatalogRelease {
+  version   Int      @id
+  etag      String
+  body      Bytes
+  sha256    String   @db.Char(64)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@map("catalog_releases")
+}
+
+model RulePack {
+  version       Int      @id
+  formatVersion Int      @map("format_version")
+  minAppVersion Int      @map("min_app_version")
+  payload       Bytes
+  // base64 Ed25519 signature over payload
+  signature     String
+  sha256        String   @db.Char(64)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@map("rule_packs")
+}
