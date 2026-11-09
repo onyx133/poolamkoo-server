@@ -1,0 +1,96 @@
+# Production stack for the shared VPS (see docs/adr/0009 and deploy/RUNBOOK.md).
+#
+# The Docker daemon runs without a bridge network or iptables management, so every
+# container uses host networking and binds to 127.0.0.1 only. Nothing here is reachable
+# from outside; the host's nginx terminates TLS on :2053 and proxies to 127.0.0.1:3100.
+#
+#   cp deploy/.env.prod.example deploy/.env      # fill in every value
+#   docker compose -f deploy/docker-compose.prod.yml up -d --build
+#
+# Compose reads deploy/.env (next to this file) for ${VARIABLE} interpolation. The api gets
+# an explicit environment list instead of env_file so it never sees the owner DB password.
+
+name: poolamkoo
+
+services:
+  db:
+    image: postgres:16-alpine
+    network_mode: host
+    # Port 5433: the host already runs other services (possibly its own Postgres on 5432).
+    command: postgres -c listen_addresses=127.0.0.1 -c port=5433
+    environment:
+      POSTGRES_USER: ${POSTGRES_OWNER_USER:-poolamkoo_owner}
+      POSTGRES_PASSWORD: ${POSTGRES_OWNER_PASSWORD:?set POSTGRES_OWNER_PASSWORD in deploy/.env}
+      POSTGRES_DB: ${POSTGRES_DB:-poolamkoo}
+      # Consumed by deploy/db-init/01-app-role.sh on first initialisation of the volume only.
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?set APP_DB_PASSWORD in deploy/.env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -p 5433 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+    restart: unless-stopped
+
+  # One-shot: applies pending SQL migrations as the owner role, then exits.
+  migrate:
+    build:
+      context: ..
+      target: migrate
+      network: host # the daemon has no bridge; builds need the host network to reach npm
+    network_mode: host
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_OWNER_USER:-poolamkoo_owner}:${POSTGRES_OWNER_PASSWORD}@127.0.0.1:5433/${POSTGRES_DB:-poolamkoo}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: 'no'
+
+  api:
+    build:
+      context: ..
+      target: runtime
+      network: host
+    network_mode: host
+    environment:
+      NODE_ENV: production
+      HOST: 127.0.0.1
+      PORT: '3100'
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      # The API connects as the least-privilege role created by db-init.
+      DATABASE_URL: postgresql://poolamkoo_app:${APP_DB_PASSWORD}@127.0.0.1:5433/${POSTGRES_DB:-poolamkoo}
+      SERVER_PEPPER: ${SERVER_PEPPER:?set SERVER_PEPPER in deploy/.env}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in deploy/.env}
+      JWT_TTL_DAYS: ${JWT_TTL_DAYS:-30}
+      RULEPACK_PUBLIC_KEY: ${RULEPACK_PUBLIC_KEY:-}
+      RATE_LIMIT_MAX: ${RATE_LIMIT_MAX:-120}
+      DOCS_ENABLED: ${DOCS_ENABLED:-true}
+      # One proxy hop (the host nginx). nginx overwrites X-Forwarded-For with $remote_addr.
+      TRUST_PROXY: '1'
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 256m
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3100/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  pgdata:
