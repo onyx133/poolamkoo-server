@@ -66,7 +66,16 @@ export default async function setup(project: TestProject): Promise<() => Promise
   project.provide('testDatabaseUrl', url);
 
   return async () => {
-    await pg.stop();
-    rmSync(dir, { recursive: true, force: true, maxRetries: 20, retryDelay: 250 });
+    try {
+      await pg.stop();
+    } catch {
+      // On Windows, embedded-postgres' own cleanup can hit EBUSY while the server's files are
+      // still being released; the temp dir is removed below on a best-effort basis.
+    }
+    try {
+      rmSync(dir, { recursive: true, force: true, maxRetries: 20, retryDelay: 250 });
+    } catch {
+      // Leftover temp dir is harmless.
+    }
   };
 }
