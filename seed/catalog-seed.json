@@ -1,0 +1,1838 @@
+{
+  "version": 1,
+  "categories": [
+    {
+      "key": "food",
+      "parent_key": null,
+      "kind": "expense",
+      "name_fa": "غذا و رستوران",
+      "color": "#FF7A59",
+      "icon_key": "food",
+      "sort": 100
+    },
+    {
+      "key": "food.delivery",
+      "parent_key": "food",
+      "kind": "expense",
+      "name_fa": "سفارش غذا",
+      "color": "#FF9277",
+      "icon_key": "food_delivery",
+      "sort": 110
+    },
+    {
+      "key": "food.restaurant",
+      "parent_key": "food",
+      "kind": "expense",
+      "name_fa": "رستوران و فست‌فود",
+      "color": "#D6664B",
+      "icon_key": "restaurant",
+      "sort": 120
+    },
+    {
+      "key": "food.cafe",
+      "parent_key": "food",
+      "kind": "expense",
+      "name_fa": "کافه و قنادی",
+      "color": "#FFA28B",
+      "icon_key": "cafe",
+      "sort": 130
+    },
+    {
+      "key": "groceries",
+      "parent_key": null,
+      "kind": "expense",
+      "name_fa": "خواربار و سوپرمارکت",
+      "color": "#43A047",
+      "icon_key": "groceries",
+      "sort": 200
+    },
+    {
+      "key": "groceries.supermarket",
+      "parent_key": "groceries",
+      "kind": "expense",
+      "name_fa": "سوپرمارکت و هایپرمارکت",
+      "color": "#65B168",
+      "icon_key": "supermarket",
+      "sort": 210
+    },
+    {
+      "key": "groceries.online",
+      "parent_key": "groceries",
+      "kind": "expense",
+      "name_fa": "سوپرمارکت آنلاین",
+      "color": "#38863C",
+      "icon_key": "groceries_online",
+      "sort": 220
+    },
+    {
+      "key": "groceries.fresh",
+      "parent_key": "groceries",
+      "kind": "expense",
+      "name_fa": "میوه و تره‌بار",
+      "color": "#7BBD7E",
+      "icon_key": "fresh",
+      "sort": 230
+    },
+    {
+      "key": "transport",
+      "parent_key": null,
+      "kind": "expense",
+      "name_fa": "حمل‌ونقل",
+      "color": "#1E88E5",
+      "icon_key": "transport",
+      "sort": 300
+    },
+    {
+      "key": "transport.ride_hailing",
+      "parent_key": "transport",
+      "kind": "expense",
+      "name_fa": "تاکسی اینترنتی",
+      "color": "#479DEA",
+      "icon_key": "ride_hailing",
+      "sort": 310
+    },
+    {
+      "key": "transport.fuel",
+      "parent_key": "transport",
+      "kind": "expense",
+      "name_fa": "بنزین و سوخت",
+      "color": "#1972C0",
+      "icon_key": "fuel",
+      "sort": 320
+    },
+    {
+      "key": "transport.public",
+      "parent_key": "transport",
+      "kind": "expense",
+      "name_fa": "مترو و اتوبوس",
+      "color": "#62ACED",
+      "icon_key": "public_transport",
+      "sort": 330
+    },
+    {
+      "key": "transport.parking_tolls",
+      "parent_key": "transport",
+      "kind": "expense",
+      "name_fa": "پارکینگ و عوارض",
+      "color": "#1662A5",
+      "icon_key": "parking",
+      "sort": 340
+    },
+    {
+      "key": "telecom",
+      "parent_key": null,
+      "kind": "expense",
+      "name_fa": "موبایل و اینترنت",
+      "color": "#8E24AA",
+      "icon_key": "telecom",
+      "sort": 400
+    },
+    {
+      "key": "telecom.topup",
+      "parent_key": "telecom",
+      "kind": "expense",
+      "name_fa": "شارژ و بسته موبایل",
+      "color": "#A24BB9",
+      "icon_key": "topup",
+      "sort": 410
+    },
+    {
+      "key": "telecom.home_internet",
+      "parent_key": "telecom",
+      "kind": "expense",
+      "name_fa": "اینترنت ثابت",
+      "color": "#771E8F",
+      "icon_key": "internet",
+      "sort": 420
+    },
+    {
+      "key": "bills",
+      "parent_key": null,
+      "kind": "expense",
+      "name_fa": "قبوض",
+      "color": "#E5A100",
+      "icon_key": "bills",
+      "sort": 500
+    },
+    {
+      "key": "bills.water",
+      "parent_key": "bills",
+      "kind": "expense",
+      "name_fa": "قبض آب",
+      "color": "#EAB22E",
+      "icon_key": "water",
+      "sort": 510
+    },
+    {
+      "key": "bills.electricity",
+      "parent_key": "bills",
+      "kind": "expense",
+      "name_fa": "قبض برق",
+      "color": "#C08700",
+      "icon_key": "electricity",
+      "sort": 520
+    },
+    {
+      "key": "bills.gas",
+      "parent_key": "bills",
+      "kind": "expense",
+      "name_fa": "قبض گاز",
+      "color": "#EDBD4D",
+      "icon_key": "gas",
+      "sort": 530
+    },
+    {
+      "key": "bills.landline",
+      "parent_key": "bills",
+      "kind": "expense",
+      "name_fa": "قبض تلفن ثابت",
+      "color": "#A57400",
+      "icon_key": "landline",
+      "sort": 540
+    },
+    {
+      "key": "housing",
+      "parent_key": null,
+      "kind": "expense",
+      "name_fa": "مسکن",
+      "color": "#A0724A",
+      "icon_key": "housing",
+      "sort": 600
+    },
+    {
+      "key": "housing.rent",
+      "parent_key": "housing",
+      "kind": "expense",
+      "name_fa": "اجاره خانه",
+      "color": "#B18B6B",
+      "icon_key": "rent",
+      "sort": 610
+    },
+    {
+      "key": "housing.mortgage",
+      "parent_key": "housing",
+      "kind": "expense",
+      "name_fa": "اقساط وام مسکن",
+      "color": "#86603E",
+      "icon_key": "mortgage",
+      "sort": 620
+    },
+    {
+      "key": "housing.maintenance",
+      "parent_key": "housing",
+      "kind": "expense",
+      "name_fa": "شارژ ساختمان و تعمیرات",
+      "color": "#BD9C80",
+      "icon_key": "maintenance",
+      "sort": 630
+    },
+    {
+      "key": "subscriptions",
+      "parent_key": null,
+      "kind": "expense",
+      "name_fa": "اشتراک و محتوای دیجیتال",
+      "color": "#7E57C2",
+      "icon_key": "subscriptions",
+      "sort": 700
+    },
+    {
+      "key": "subscriptions.music",
+      "parent_key": "subscriptions",
+      "kind": "expense",
+      "name_fa": "موسیقی",
+      "color": "#9575CD",
+      "icon_key": "music",
+      "sort": 710
+    },
+    {
+      "key": "subscriptions.video",
+      "parent_key": "subscriptions",
+      "kind": "expense",
+      "name_fa": "فیلم و سریال",
+      "color": "#6A49A3",
+      "icon_key": "video",
+      "sort": 720
+    },
+    {
+      "key": "subscriptions.books",
+      "parent_key": "subscriptions",
+      "kind": "expense",
+      "name_fa": "کتاب و کتاب صوتی",
+      "color": "#A589D4",
+      "icon_key": "books",
+      "sort": 730
+    },
+    {
+      "key": "travel",
+      "parent_key": null,
+      "kind": "expense",
+      "name_fa": "سفر و اقامت",
+      "color": "#00ACC1",
+      "icon_key": "travel",
+      "sort": 800
+    },
+    {
+      "key": "travel.stay",
+      "parent_key": "travel",
+      "kind": "expense",
+      "name_fa": "اجاره ویلا و اقامتگاه",
+      "color": "#2EBBCC",
+      "icon_key": "stay",
+      "sort": 810
+    },
+    {
+      "key": "travel.hotel",
+      "parent_key": "travel",
+      "kind": "expense",
+      "name_fa": "هتل",
+      "color": "#0090A2",
+      "icon_key": "hotel",
+      "sort": 820
+    },
+    {
+      "key": "travel.tickets",
+      "parent_key": "travel",
+      "kind": "expense",
+      "name_fa": "بلیت هواپیما، قطار و اتوبوس",
+      "color": "#4DC5D4",
+      "icon_key": "tickets",
+      "sort": 830
+    },
+    {
+      "key": "leisure",
+      "parent_key": null,
+      "kind": "expense",
+      "name_fa": "تفریح و سرگرمی",
+      "color": "#FB8C00",
+      "icon_key": "leisure",
+      "sort": 900
+    },
+    {
+      "key": "leisure.amusement",
+      "parent_key": "leisure",
+      "kind": "expense",
+      "name_fa": "شهربازی و پارک",
+      "color": "#FCA12E",
+      "icon_key": "amusement",
+      "sort": 910
+    },
+    {
+      "key": "leisure.sport",
+      "parent_key": "leisure",
+      "kind": "expense",
+      "name_fa": "استخر و باشگاه ورزشی",
+      "color": "#D37600",
+      "icon_key": "sport",
+      "sort": 920
+    },
+    {
+      "key": "leisure.cinema",
+      "parent_key": "leisure",
+      "kind": "expense",
+      "name_fa": "سینما و تئاتر",
+      "color": "#FCAF4D",
+      "icon_key": "cinema",
+      "sort": 930
+    },
+    {
+      "key": "health",
+      "parent_key": null,
+      "kind": "expense",
+      "name_fa": "سلامت و درمان",
+      "color": "#E53935",
+      "icon_key": "health",
+      "sort": 1000
+    },
+    {
+      "key": "health.pharmacy",
+      "parent_key": "health",
+      "kind": "expense",
+      "name_fa": "داروخانه",
+      "color": "#EA5D59",
+      "icon_key": "pharmacy",
+      "sort": 1010
+    },
+    {
+      "key": "health.doctor",
+      "parent_key": "health",
+      "kind": "expense",
+      "name_fa": "پزشک و درمانگاه",
+      "color": "#C0302D",
+      "icon_key": "doctor",
+      "sort": 1020
+    },
+    {
+      "key": "health.insurance",
+      "parent_key": "health",
+      "kind": "expense",
+      "name_fa": "بیمه درمان",
+      "color": "#ED7472",
+      "icon_key": "health_insurance",
+      "sort": 1030
+    },
+    {
+      "key": "education",
+      "parent_key": null,
+      "kind": "expense",
+      "name_fa": "آموزش",
+      "color": "#3949AB",
+      "icon_key": "education",
+      "sort": 1100
+    },
+    {
+      "key": "education.tuition",
+      "parent_key": "education",
+      "kind": "expense",
+      "name_fa": "شهریه و ثبت‌نام",
+      "color": "#5D6ABA",
+      "icon_key": "tuition",
+      "sort": 1110
+    },
+    {
+      "key": "education.courses",
+      "parent_key": "education",
+      "kind": "expense",
+      "name_fa": "دوره و کلاس",
+      "color": "#303D90",
+      "icon_key": "courses",
+      "sort": 1120
+    },
+    {
+      "key": "shopping",
+      "parent_key": null,
+      "kind": "expense",
+      "name_fa": "خرید",
+      "color": "#EC407A",
+      "icon_key": "shopping",
+      "sort": 1200
+    },
+    {
+      "key": "shopping.marketplace",
+      "parent_key": "shopping",
+      "kind": "expense",
+      "name_fa": "فروشگاه‌های آنلاین",
+      "color": "#EF6292",
+      "icon_key": "marketplace",
+      "sort": 1210
+    },
+    {
+      "key": "shopping.clothing",
+      "parent_key": "shopping",
+      "kind": "expense",
+      "name_fa": "پوشاک",
+      "color": "#C63666",
+      "icon_key": "clothing",
+      "sort": 1220
+    },
+    {
+      "key": "shopping.electronics",
+      "parent_key": "shopping",
+      "kind": "expense",
+      "name_fa": "لوازم دیجیتال و برقی",
+      "color": "#F279A2",
+      "icon_key": "electronics",
+      "sort": 1230
+    },
+    {
+      "key": "car",
+      "parent_key": null,
+      "kind": "expense",
+      "name_fa": "خودرو",
+      "color": "#546E7A",
+      "icon_key": "car",
+      "sort": 1300
+    },
+    {
+      "key": "car.installment",
+      "parent_key": "car",
+      "kind": "expense",
+      "name_fa": "اقساط خرید خودرو",
+      "color": "#738892",
+      "icon_key": "car_installment",
+      "sort": 1310
+    },
+    {
+      "key": "car.service",
+      "parent_key": "car",
+      "kind": "expense",
+      "name_fa": "تعمیر و سرویس خودرو",
+      "color": "#475C66",
+      "icon_key": "car_service",
+      "sort": 1320
+    },
+    {
+      "key": "car.insurance",
+      "parent_key": "car",
+      "kind": "expense",
+      "name_fa": "بیمه خودرو",
+      "color": "#879AA2",
+      "icon_key": "car_insurance",
+      "sort": 1330
+    },
+    {
+      "key": "loans",
+      "parent_key": null,
+      "kind": "expense",
+      "name_fa": "وام و اقساط",
+      "color": "#5D4037",
+      "icon_key": "loans",
+      "sort": 1400
+    },
+    {
+      "key": "loans.installment",
+      "parent_key": "loans",
+      "kind": "expense",
+      "name_fa": "قسط وام",
+      "color": "#7A625B",
+      "icon_key": "loan_installment",
+      "sort": 1410
+    },
+    {
+      "key": "loans.bnpl",
+      "parent_key": "loans",
+      "kind": "expense",
+      "name_fa": "خرید اعتباری و اقساط فروشگاهی",
+      "color": "#4E362E",
+      "icon_key": "bnpl",
+      "sort": 1420
+    },
+    {
+      "key": "charity",
+      "parent_key": null,
+      "kind": "expense",
+      "name_fa": "خیریه و نذورات",
+      "color": "#26A69A",
+      "icon_key": "charity",
+      "sort": 1500
+    },
+    {
+      "key": "fees",
+      "parent_key": null,
+      "kind": "expense",
+      "name_fa": "کارمزد و هزینه بانکی",
+      "color": "#78909C",
+      "icon_key": "fees",
+      "sort": 1600
+    },
+    {
+      "key": "fees.bank",
+      "parent_key": "fees",
+      "kind": "expense",
+      "name_fa": "کارمزد بانکی",
+      "color": "#90A4AE",
+      "icon_key": "bank_fee",
+      "sort": 1610
+    },
+    {
+      "key": "other",
+      "parent_key": null,
+      "kind": "expense",
+      "name_fa": "سایر هزینه‌ها",
+      "color": "#8D99AE",
+      "icon_key": "other",
+      "sort": 1700
+    },
+    {
+      "key": "other.person_transfer",
+      "parent_key": "other",
+      "kind": "expense",
+      "name_fa": "کارت‌به‌کارت و انتقال به اشخاص",
+      "color": "#A2ABBD",
+      "icon_key": "person_transfer",
+      "sort": 1710
+    },
+    {
+      "key": "transfers",
+      "parent_key": null,
+      "kind": "neutral",
+      "name_fa": "جابه‌جایی پول",
+      "color": "#9E9E9E",
+      "icon_key": "transfers",
+      "sort": 1800
+    },
+    {
+      "key": "transfers.own",
+      "parent_key": "transfers",
+      "kind": "neutral",
+      "name_fa": "انتقال بین حساب‌های خودم",
+      "color": "#AFAFAF",
+      "icon_key": "own_transfer",
+      "sort": 1810
+    },
+    {
+      "key": "transfers.pass_through",
+      "parent_key": "transfers",
+      "kind": "neutral",
+      "name_fa": "واریز و برداشت واسطه‌ای",
+      "color": "#858585",
+      "icon_key": "pass_through",
+      "sort": 1820
+    },
+    {
+      "key": "income",
+      "parent_key": null,
+      "kind": "income",
+      "name_fa": "درآمد",
+      "color": "#1B9E5A",
+      "icon_key": "income",
+      "sort": 1900
+    },
+    {
+      "key": "income.salary",
+      "parent_key": "income",
+      "kind": "income",
+      "name_fa": "حقوق و دستمزد",
+      "color": "#44AF78",
+      "icon_key": "salary",
+      "sort": 1910
+    },
+    {
+      "key": "income.freelance",
+      "parent_key": "income",
+      "kind": "income",
+      "name_fa": "درآمد پروژه‌ای و فریلنس",
+      "color": "#17854C",
+      "icon_key": "freelance",
+      "sort": 1920
+    },
+    {
+      "key": "income.rental",
+      "parent_key": "income",
+      "kind": "income",
+      "name_fa": "درآمد اجاره",
+      "color": "#5FBB8C",
+      "icon_key": "rental_income",
+      "sort": 1930
+    },
+    {
+      "key": "income.refund",
+      "parent_key": "income",
+      "kind": "income",
+      "name_fa": "بازگشت وجه",
+      "color": "#137241",
+      "icon_key": "refund",
+      "sort": 1940
+    },
+    {
+      "key": "income.gift",
+      "parent_key": "income",
+      "kind": "income",
+      "name_fa": "هدیه و عیدی",
+      "color": "#76C59C",
+      "icon_key": "gift",
+      "sort": 1950
+    },
+    {
+      "key": "income.interest",
+      "parent_key": "income",
+      "kind": "income",
+      "name_fa": "سود سپرده و سرمایه‌گذاری",
+      "color": "#116238",
+      "icon_key": "interest",
+      "sort": 1960
+    },
+    {
+      "key": "income.other",
+      "parent_key": "income",
+      "kind": "income",
+      "name_fa": "سایر درآمدها",
+      "color": "#84CBA6",
+      "icon_key": "income_other",
+      "sort": 1970
+    }
+  ],
+  "merchants": [
+    {
+      "key": "snappfood",
+      "name_fa": "اسنپ‌فود",
+      "category_key": "food.delivery",
+      "icon_key": "food_delivery",
+      "keywords": ["snappfood", "snapp food", "اسنپ فود", "اسنپ‌فود", "اسنپفود"]
+    },
+    {
+      "key": "reyhoon",
+      "name_fa": "ریحون",
+      "category_key": "food.delivery",
+      "icon_key": "food_delivery",
+      "keywords": ["reyhoon", "ریحون"]
+    },
+    {
+      "key": "okala",
+      "name_fa": "اوکالا",
+      "category_key": "groceries.online",
+      "icon_key": "groceries_online",
+      "keywords": ["okala", "اوکالا"]
+    },
+    {
+      "key": "snapp_market",
+      "name_fa": "اسنپ‌مارکت",
+      "category_key": "groceries.online",
+      "icon_key": "groceries_online",
+      "keywords": ["snapp market", "snappmarket", "اسنپ مارکت", "اسنپ‌مارکت"]
+    },
+    {
+      "key": "ofogh_kourosh",
+      "name_fa": "افق کوروش",
+      "category_key": "groceries.supermarket",
+      "icon_key": "supermarket",
+      "keywords": ["ofogh kourosh", "ofoghkourosh", "افق کوروش", "افق کورش"]
+    },
+    {
+      "key": "hyperstar",
+      "name_fa": "هایپراستار",
+      "category_key": "groceries.supermarket",
+      "icon_key": "supermarket",
+      "keywords": ["hyperstar", "hyper star", "هایپراستار", "هایپر استار"]
+    },
+    {
+      "key": "refah_stores",
+      "name_fa": "فروشگاه‌های رفاه",
+      "category_key": "groceries.supermarket",
+      "icon_key": "supermarket",
+      "keywords": [
+        "refah chain",
+        "refah stores",
+        "فروشگاه رفاه",
+        "فروشگاه‌های رفاه",
+        "فروشگاههای رفاه"
+      ]
+    },
+    {
+      "key": "shahrvand",
+      "name_fa": "شهروند",
+      "category_key": "groceries.supermarket",
+      "icon_key": "supermarket",
+      "keywords": ["shahrvand", "فروشگاه شهروند", "فروشگاه‌های شهروند"]
+    },
+    {
+      "key": "digikala",
+      "name_fa": "دیجی‌کالا",
+      "category_key": "shopping.marketplace",
+      "icon_key": "marketplace",
+      "keywords": ["digikala", "دیجی کالا", "دیجی‌کالا", "دیجیکالا"]
+    },
+    {
+      "key": "basalam",
+      "name_fa": "باسلام",
+      "category_key": "shopping.marketplace",
+      "icon_key": "marketplace",
+      "keywords": ["basalam", "باسلام"]
+    },
+    {
+      "key": "digistyle",
+      "name_fa": "دیجی‌استایل",
+      "category_key": "shopping.clothing",
+      "icon_key": "clothing",
+      "keywords": ["digistyle", "دیجی استایل", "دیجی‌استایل"]
+    },
+    {
+      "key": "snapp",
+      "name_fa": "اسنپ",
+      "category_key": "transport.ride_hailing",
+      "icon_key": "ride_hailing",
+      "keywords": ["snapp", "snapp ride", "اسنپ", "اسنپ رانندگی"]
+    },
+    {
+      "key": "tapsi",
+      "name_fa": "تپسی",
+      "category_key": "transport.ride_hailing",
+      "icon_key": "ride_hailing",
+      "keywords": ["tapsi", "tap30", "tap 30", "تپسی", "تپ سی", "تپ۳۰", "تپ30"]
+    },
+    {
+      "key": "irancell",
+      "name_fa": "ایرانسل",
+      "category_key": "telecom.topup",
+      "icon_key": "topup",
+      "keywords": ["irancell", "mtn irancell", "ایرانسل"]
+    },
+    {
+      "key": "mci",
+      "name_fa": "همراه اول",
+      "category_key": "telecom.topup",
+      "icon_key": "topup",
+      "keywords": [
+        "hamrah aval",
+        "hamrah-e aval",
+        "hamraheaval",
+        "mci",
+        "همراه اول",
+        "همراه‌اول",
+        "همراهاول"
+      ]
+    },
+    {
+      "key": "rightel",
+      "name_fa": "رایتل",
+      "category_key": "telecom.topup",
+      "icon_key": "topup",
+      "keywords": ["rightel", "رایتل"]
+    },
+    {
+      "key": "mobinnet",
+      "name_fa": "مبین‌نت",
+      "category_key": "telecom.home_internet",
+      "icon_key": "internet",
+      "keywords": ["mobinnet", "mobin net", "مبین نت", "مبین‌نت"]
+    },
+    {
+      "key": "shatel",
+      "name_fa": "شاتل",
+      "category_key": "telecom.home_internet",
+      "icon_key": "internet",
+      "keywords": ["shatel", "شاتل"]
+    },
+    {
+      "key": "spotify",
+      "name_fa": "اسپاتیفای",
+      "category_key": "subscriptions.music",
+      "icon_key": "music",
+      "keywords": ["spotify", "اسپاتیفای"]
+    },
+    {
+      "key": "anghami",
+      "name_fa": "انغامی",
+      "category_key": "subscriptions.music",
+      "icon_key": "music",
+      "keywords": ["anghami", "انغامی"]
+    },
+    {
+      "key": "radiojavan",
+      "name_fa": "رادیو جوان",
+      "category_key": "subscriptions.music",
+      "icon_key": "music",
+      "keywords": ["radiojavan", "radio javan", "رادیو جوان"]
+    },
+    {
+      "key": "filimo",
+      "name_fa": "فیلیمو",
+      "category_key": "subscriptions.video",
+      "icon_key": "video",
+      "keywords": ["filimo", "فیلیمو"]
+    },
+    {
+      "key": "namava",
+      "name_fa": "نماوا",
+      "category_key": "subscriptions.video",
+      "icon_key": "video",
+      "keywords": ["namava", "نماوا"]
+    },
+    {
+      "key": "telewebion",
+      "name_fa": "تلوبیون",
+      "category_key": "subscriptions.video",
+      "icon_key": "video",
+      "keywords": ["telewebion", "تلوبیون"]
+    },
+    {
+      "key": "fidibo",
+      "name_fa": "فیدیبو",
+      "category_key": "subscriptions.books",
+      "icon_key": "books",
+      "keywords": ["fidibo", "فیدیبو"]
+    },
+    {
+      "key": "taaghche",
+      "name_fa": "طاقچه",
+      "category_key": "subscriptions.books",
+      "icon_key": "books",
+      "keywords": ["taaghche", "taghche", "طاقچه"]
+    },
+    {
+      "key": "ketabrah",
+      "name_fa": "کتابراه",
+      "category_key": "subscriptions.books",
+      "icon_key": "books",
+      "keywords": ["ketabrah", "کتابراه"]
+    },
+    {
+      "key": "jabama",
+      "name_fa": "جاباما",
+      "category_key": "travel.stay",
+      "icon_key": "stay",
+      "keywords": ["jabama", "جاباما"]
+    },
+    {
+      "key": "jajiga",
+      "name_fa": "جاجیگا",
+      "category_key": "travel.stay",
+      "icon_key": "stay",
+      "keywords": ["jajiga", "جاجیگا"]
+    },
+    {
+      "key": "otaghak",
+      "name_fa": "اتاقک",
+      "category_key": "travel.stay",
+      "icon_key": "stay",
+      "keywords": ["otaghak", "اتاقک"]
+    },
+    {
+      "key": "alibaba",
+      "name_fa": "علی‌بابا",
+      "category_key": "travel.tickets",
+      "icon_key": "tickets",
+      "keywords": ["alibaba", "alibaba.ir", "علی بابا", "علی‌بابا", "علیبابا"]
+    },
+    {
+      "key": "snapp_trip",
+      "name_fa": "اسنپ‌تریپ",
+      "category_key": "travel.tickets",
+      "icon_key": "tickets",
+      "keywords": ["snapp trip", "snapptrip", "اسنپ تریپ", "اسنپ‌تریپ"]
+    },
+    {
+      "key": "flightio",
+      "name_fa": "فلایتیو",
+      "category_key": "travel.tickets",
+      "icon_key": "tickets",
+      "keywords": ["flightio", "فلایتیو"]
+    },
+    {
+      "key": "oppark",
+      "name_fa": "اوپارک",
+      "category_key": "leisure.amusement",
+      "icon_key": "amusement",
+      "keywords": ["oppark", "op park", "اوپارک"]
+    },
+    {
+      "key": "cinematicket",
+      "name_fa": "سینماتیکت",
+      "category_key": "leisure.cinema",
+      "icon_key": "cinema",
+      "keywords": ["cinematicket", "cinema ticket", "سینماتیکت", "سینما تیکت"]
+    },
+    {
+      "key": "snapp_doctor",
+      "name_fa": "اسنپ‌داکتر",
+      "category_key": "health.doctor",
+      "icon_key": "doctor",
+      "keywords": ["snapp doctor", "snappdoctor", "اسنپ دکتر", "اسنپ‌داکتر", "اسنپ داکتر"]
+    },
+    {
+      "key": "doctoreto",
+      "name_fa": "دکترتو",
+      "category_key": "health.doctor",
+      "icon_key": "doctor",
+      "keywords": ["doctoreto", "دکترتو"]
+    },
+    {
+      "key": "hamrah_mechanic",
+      "name_fa": "همراه مکانیک",
+      "category_key": "car.service",
+      "icon_key": "car_service",
+      "keywords": ["hamrah mechanic", "hamrahmechanic", "همراه مکانیک"]
+    },
+    {
+      "key": "azki",
+      "name_fa": "آزکی",
+      "category_key": "car.insurance",
+      "icon_key": "car_insurance",
+      "keywords": ["azki", "آزکی"]
+    },
+    {
+      "key": "bimito",
+      "name_fa": "بیمیتو",
+      "category_key": "car.insurance",
+      "icon_key": "car_insurance",
+      "keywords": ["bimito", "بیمیتو"]
+    },
+    {
+      "key": "mahak",
+      "name_fa": "محک",
+      "category_key": "charity",
+      "icon_key": "charity",
+      "keywords": ["mahak", "موسسه محک", "مؤسسه محک"]
+    },
+    {
+      "key": "komiteh_emdad",
+      "name_fa": "کمیته امداد",
+      "category_key": "charity",
+      "icon_key": "charity",
+      "keywords": ["komiteh emdad", "کمیته امداد", "کمیته امداد امام خمینی"]
+    }
+  ],
+  "icons": [
+    {
+      "key": "food",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 7a5 5 0 1 0 0 10a5 5 0 1 0 0-10z" },
+        { "role": "accent", "d": "M18 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "food_delivery",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M7 7h10v10H7z" },
+        { "role": "accent", "d": "M6 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "restaurant",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 6l6 6l-6 6l-6-6z" },
+        { "role": "accent", "d": "M18 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "cafe",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 6l6 11H6z" },
+        { "role": "accent", "d": "M6 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "groceries",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M7 16V11h2v5zM11 16V8h2v8zM15 16v-3h2v3z" },
+        { "role": "accent", "d": "M18 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "supermarket",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M13 5l-6 8h4l-1 6l6-8h-4z" },
+        { "role": "accent", "d": "M6 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "groceries_online",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 5c3 4 5 6.5 5 9a5 5 0 0 1-10 0c0-2.5 2-5 5-9z" },
+        { "role": "accent", "d": "M18 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "fresh",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 18l-5.5-5.5a3.5 3.5 0 0 1 5.5-4.2a3.5 3.5 0 0 1 5.5 4.2z" },
+        { "role": "accent", "d": "M6 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "transport",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M10.5 6h3v4.5H18v3h-4.5V18h-3v-4.5H6v-3h4.5z" },
+        { "role": "accent", "d": "M18 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "ride_hailing",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M6 8h9V6l3.5 3.5L15 13v-2H6zM18 18H9v-2l-3.5-3.5L9 9v2h9z" },
+        { "role": "accent", "d": "M6 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "fuel",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        {
+          "role": "glyph",
+          "d": "M12 5l2.1 4.5l4.9.6l-3.6 3.4l.9 4.9L12 16l-4.3 2.4l.9-4.9L5 10.1l4.9-.6z"
+        },
+        { "role": "accent", "d": "M18 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "public_transport",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        {
+          "role": "glyph",
+          "d": "M12 6a6 6 0 1 0 0 12a6 6 0 1 0 0-12zm0 3a3 3 0 1 1 0 6a3 3 0 1 1 0-6z"
+        },
+        { "role": "accent", "d": "M6 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "parking",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 5l7 6h-2v7H7v-7H5z" },
+        { "role": "accent", "d": "M18 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "telecom",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 7a5 5 0 1 0 0 10a5 5 0 1 0 0-10z" },
+        { "role": "accent", "d": "M18 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "topup",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M7 7h10v10H7z" },
+        { "role": "accent", "d": "M6 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "internet",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 6l6 6l-6 6l-6-6z" },
+        { "role": "accent", "d": "M18 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "bills",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 6l6 11H6z" },
+        { "role": "accent", "d": "M6 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "water",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M7 16V11h2v5zM11 16V8h2v8zM15 16v-3h2v3z" },
+        { "role": "accent", "d": "M18 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "electricity",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M13 5l-6 8h4l-1 6l6-8h-4z" },
+        { "role": "accent", "d": "M6 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "gas",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 5c3 4 5 6.5 5 9a5 5 0 0 1-10 0c0-2.5 2-5 5-9z" },
+        { "role": "accent", "d": "M18 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "landline",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 18l-5.5-5.5a3.5 3.5 0 0 1 5.5-4.2a3.5 3.5 0 0 1 5.5 4.2z" },
+        { "role": "accent", "d": "M6 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "housing",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M10.5 6h3v4.5H18v3h-4.5V18h-3v-4.5H6v-3h4.5z" },
+        { "role": "accent", "d": "M18 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "rent",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M6 8h9V6l3.5 3.5L15 13v-2H6zM18 18H9v-2l-3.5-3.5L9 9v2h9z" },
+        { "role": "accent", "d": "M6 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "mortgage",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        {
+          "role": "glyph",
+          "d": "M12 5l2.1 4.5l4.9.6l-3.6 3.4l.9 4.9L12 16l-4.3 2.4l.9-4.9L5 10.1l4.9-.6z"
+        },
+        { "role": "accent", "d": "M18 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "maintenance",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        {
+          "role": "glyph",
+          "d": "M12 6a6 6 0 1 0 0 12a6 6 0 1 0 0-12zm0 3a3 3 0 1 1 0 6a3 3 0 1 1 0-6z"
+        },
+        { "role": "accent", "d": "M6 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "subscriptions",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 5l7 6h-2v7H7v-7H5z" },
+        { "role": "accent", "d": "M18 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "music",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 7a5 5 0 1 0 0 10a5 5 0 1 0 0-10z" },
+        { "role": "accent", "d": "M18 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "video",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M7 7h10v10H7z" },
+        { "role": "accent", "d": "M6 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "books",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 6l6 6l-6 6l-6-6z" },
+        { "role": "accent", "d": "M18 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "travel",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 6l6 11H6z" },
+        { "role": "accent", "d": "M6 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "stay",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M7 16V11h2v5zM11 16V8h2v8zM15 16v-3h2v3z" },
+        { "role": "accent", "d": "M18 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "hotel",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M13 5l-6 8h4l-1 6l6-8h-4z" },
+        { "role": "accent", "d": "M6 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "tickets",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 5c3 4 5 6.5 5 9a5 5 0 0 1-10 0c0-2.5 2-5 5-9z" },
+        { "role": "accent", "d": "M18 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "leisure",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 18l-5.5-5.5a3.5 3.5 0 0 1 5.5-4.2a3.5 3.5 0 0 1 5.5 4.2z" },
+        { "role": "accent", "d": "M6 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "amusement",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M10.5 6h3v4.5H18v3h-4.5V18h-3v-4.5H6v-3h4.5z" },
+        { "role": "accent", "d": "M18 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "sport",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M6 8h9V6l3.5 3.5L15 13v-2H6zM18 18H9v-2l-3.5-3.5L9 9v2h9z" },
+        { "role": "accent", "d": "M6 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "cinema",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        {
+          "role": "glyph",
+          "d": "M12 5l2.1 4.5l4.9.6l-3.6 3.4l.9 4.9L12 16l-4.3 2.4l.9-4.9L5 10.1l4.9-.6z"
+        },
+        { "role": "accent", "d": "M18 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "health",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        {
+          "role": "glyph",
+          "d": "M12 6a6 6 0 1 0 0 12a6 6 0 1 0 0-12zm0 3a3 3 0 1 1 0 6a3 3 0 1 1 0-6z"
+        },
+        { "role": "accent", "d": "M6 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "pharmacy",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 5l7 6h-2v7H7v-7H5z" },
+        { "role": "accent", "d": "M18 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "doctor",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 7a5 5 0 1 0 0 10a5 5 0 1 0 0-10z" },
+        { "role": "accent", "d": "M18 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "health_insurance",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M7 7h10v10H7z" },
+        { "role": "accent", "d": "M6 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "education",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 6l6 6l-6 6l-6-6z" },
+        { "role": "accent", "d": "M18 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "tuition",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 6l6 11H6z" },
+        { "role": "accent", "d": "M6 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "courses",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M7 16V11h2v5zM11 16V8h2v8zM15 16v-3h2v3z" },
+        { "role": "accent", "d": "M18 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "shopping",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M13 5l-6 8h4l-1 6l6-8h-4z" },
+        { "role": "accent", "d": "M6 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "marketplace",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 5c3 4 5 6.5 5 9a5 5 0 0 1-10 0c0-2.5 2-5 5-9z" },
+        { "role": "accent", "d": "M18 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "clothing",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 18l-5.5-5.5a3.5 3.5 0 0 1 5.5-4.2a3.5 3.5 0 0 1 5.5 4.2z" },
+        { "role": "accent", "d": "M6 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "electronics",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M10.5 6h3v4.5H18v3h-4.5V18h-3v-4.5H6v-3h4.5z" },
+        { "role": "accent", "d": "M18 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "car",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M6 8h9V6l3.5 3.5L15 13v-2H6zM18 18H9v-2l-3.5-3.5L9 9v2h9z" },
+        { "role": "accent", "d": "M6 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "car_installment",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        {
+          "role": "glyph",
+          "d": "M12 5l2.1 4.5l4.9.6l-3.6 3.4l.9 4.9L12 16l-4.3 2.4l.9-4.9L5 10.1l4.9-.6z"
+        },
+        { "role": "accent", "d": "M18 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "car_service",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        {
+          "role": "glyph",
+          "d": "M12 6a6 6 0 1 0 0 12a6 6 0 1 0 0-12zm0 3a3 3 0 1 1 0 6a3 3 0 1 1 0-6z"
+        },
+        { "role": "accent", "d": "M6 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "car_insurance",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 5l7 6h-2v7H7v-7H5z" },
+        { "role": "accent", "d": "M18 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "loans",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 7a5 5 0 1 0 0 10a5 5 0 1 0 0-10z" },
+        { "role": "accent", "d": "M18 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "loan_installment",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M7 7h10v10H7z" },
+        { "role": "accent", "d": "M6 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "bnpl",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 6l6 6l-6 6l-6-6z" },
+        { "role": "accent", "d": "M18 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "charity",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 6l6 11H6z" },
+        { "role": "accent", "d": "M6 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "fees",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M7 16V11h2v5zM11 16V8h2v8zM15 16v-3h2v3z" },
+        { "role": "accent", "d": "M18 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "bank_fee",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M13 5l-6 8h4l-1 6l6-8h-4z" },
+        { "role": "accent", "d": "M6 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "other",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 5c3 4 5 6.5 5 9a5 5 0 0 1-10 0c0-2.5 2-5 5-9z" },
+        { "role": "accent", "d": "M18 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "person_transfer",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 18l-5.5-5.5a3.5 3.5 0 0 1 5.5-4.2a3.5 3.5 0 0 1 5.5 4.2z" },
+        { "role": "accent", "d": "M6 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "transfers",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M10.5 6h3v4.5H18v3h-4.5V18h-3v-4.5H6v-3h4.5z" },
+        { "role": "accent", "d": "M18 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "own_transfer",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M6 8h9V6l3.5 3.5L15 13v-2H6zM18 18H9v-2l-3.5-3.5L9 9v2h9z" },
+        { "role": "accent", "d": "M6 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "pass_through",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        {
+          "role": "glyph",
+          "d": "M12 5l2.1 4.5l4.9.6l-3.6 3.4l.9 4.9L12 16l-4.3 2.4l.9-4.9L5 10.1l4.9-.6z"
+        },
+        { "role": "accent", "d": "M18 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "income",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        {
+          "role": "glyph",
+          "d": "M12 6a6 6 0 1 0 0 12a6 6 0 1 0 0-12zm0 3a3 3 0 1 1 0 6a3 3 0 1 1 0-6z"
+        },
+        { "role": "accent", "d": "M6 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "salary",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 5l7 6h-2v7H7v-7H5z" },
+        { "role": "accent", "d": "M18 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "freelance",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 7a5 5 0 1 0 0 10a5 5 0 1 0 0-10z" },
+        { "role": "accent", "d": "M18 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "rental_income",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M7 7h10v10H7z" },
+        { "role": "accent", "d": "M6 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "refund",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 6l6 6l-6 6l-6-6z" },
+        { "role": "accent", "d": "M18 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "gift",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M12 6l6 11H6z" },
+        { "role": "accent", "d": "M6 4a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "interest",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M7 16V11h2v5zM11 16V8h2v8zM15 16v-3h2v3z" },
+        { "role": "accent", "d": "M18 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    },
+    {
+      "key": "income_other",
+      "view_box": [24, 24],
+      "layers": [
+        {
+          "role": "plate",
+          "d": "M6 2h12a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4z"
+        },
+        { "role": "glyph", "d": "M13 5l-6 8h4l-1 6l6-8h-4z" },
+        { "role": "accent", "d": "M6 16a2 2 0 1 0 0 4a2 2 0 1 0 0-4z" }
+      ]
+    }
+  ]
+}
