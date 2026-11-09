@@ -54,6 +54,8 @@ export default async function setup(project: TestProject): Promise<() => Promise
     password: 'postgres',
     port,
     persistent: false,
+    // Windows would otherwise pick a legacy ANSI encoding and reject Persian text.
+    initdbFlags: ['--encoding=UTF8', '--locale=C'],
     onLog: () => {},
     onError: () => {},
   });
