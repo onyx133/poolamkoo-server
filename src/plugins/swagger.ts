@@ -17,6 +17,15 @@ export const swaggerPlugin = fp<{ config: Config }>(
           version: config.appVersion,
           description: 'Contract: docs/api/contract-v1.md',
         },
+        tags: [
+          { name: 'health', description: 'Liveness probe for monitoring' },
+          { name: 'installs', description: 'Anonymous install registration and erasure' },
+          {
+            name: 'profile',
+            description: 'Opt-in income band and the published band table',
+          },
+          { name: 'offers', description: 'Opt-in offers targeted by income band' },
+        ],
         components: {
           securitySchemes: { bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' } },
         },
