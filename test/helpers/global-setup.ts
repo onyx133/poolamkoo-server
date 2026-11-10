@@ -54,6 +54,8 @@ export default async function setup(project: TestProject): Promise<() => Promise
     password: 'postgres',
     port,
     persistent: false,
+    // Windows defaults to a WIN1252 cluster, which cannot store Persian text.
+    initdbFlags: ['--encoding=UTF8', '--locale=C'],
     onLog: () => {},
     onError: () => {},
   });
