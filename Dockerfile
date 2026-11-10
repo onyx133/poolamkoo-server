@@ -21,17 +21,23 @@ WORKDIR /app
 RUN chown node:node /app
 USER node
 COPY --chown=node:node package.json package-lock.json ./
-RUN npm ci --include=dev
+# embedded-postgres (a dev dependency for the test suite) ships ~100 MB of Postgres binaries the
+# migrator never uses; it is removed in the same layer so it does not stay in the image.
+RUN npm ci --include=dev && rm -rf node_modules/embedded-postgres node_modules/@embedded-postgres
 COPY --chown=node:node prisma.config.ts ./
 COPY --chown=node:node prisma ./prisma
 CMD ["npx", "prisma", "migrate", "deploy"]
 
 # ---- runtime (default target; keep it last) ----
+# Works with `read_only: true` (both compose files set it) plus a tmpfs on /tmp.
 FROM node:24-alpine AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
 COPY --from=build --chown=node:node /app/dist ./dist
+# Starter data for the first deploy: `node dist/cli/bands-import.js seed/bands.json` etc.
+# (read-only use; the image never writes to its filesystem).
+COPY --chown=node:node seed ./seed
 COPY --chown=node:node package.json ./
 USER node
 EXPOSE 3000

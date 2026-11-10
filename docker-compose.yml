@@ -1,15 +1,19 @@
 # Local development stack: postgres + one-shot migrations + api.
 #   docker compose up --build
-# The API connects as the least-privilege role `poolamkoo_app`; migrations run as the owner.
+# Roles (created by deploy/db-init/01-app-role.sh): poolamkoo_admin is the bootstrap superuser,
+# poolamkoo_owner (non-superuser) runs migrations, poolamkoo_app (DML only) is what the API uses.
 # Passwords below are for local development only. Production uses deploy/ overrides and secrets.
 
 services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: poolamkoo_owner
-      POSTGRES_PASSWORD: owner-dev-password
+      POSTGRES_USER: poolamkoo_admin
+      POSTGRES_PASSWORD: admin-dev-password
       POSTGRES_DB: poolamkoo
+      # TCP always asks for a password; only the container-local socket stays trusted.
+      POSTGRES_INITDB_ARGS: '--auth-host=scram-sha-256 --auth-local=trust'
+      OWNER_DB_PASSWORD: owner-dev-password
       APP_DB_PASSWORD: app-dev-password
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -17,7 +21,7 @@ services:
     ports:
       - '127.0.0.1:5432:5432'
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U poolamkoo_owner -d poolamkoo']
+      test: ['CMD-SHELL', 'pg_isready -U poolamkoo_admin -d poolamkoo']
       interval: 5s
       timeout: 3s
       retries: 10
@@ -50,6 +54,13 @@ services:
       migrate:
         condition: service_completed_successfully
     restart: unless-stopped
+    # Same hardening as production: the image must run with a read-only root filesystem.
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
 
 volumes:
   pgdata:
