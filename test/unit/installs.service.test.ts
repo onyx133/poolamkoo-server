@@ -28,6 +28,16 @@ class FakeInstallsRepository implements InstallsRepository {
     this.rows.delete(idHash);
     return Promise.resolve();
   }
+  deleteLastSeenBefore(day: string): Promise<number> {
+    let n = 0;
+    for (const [id, row] of this.rows) {
+      if (row.lastSeenOn < day) {
+        this.rows.delete(id);
+        n++;
+      }
+    }
+    return Promise.resolve(n);
+  }
 }
 
 const pepper = Buffer.alloc(32, 9);
@@ -99,5 +109,30 @@ describe('InstallsService.erase', () => {
     await service.erase(idHash);
     expect(await service.authenticate(idHash)).toBe(false);
     await expect(service.erase(idHash)).resolves.toBeUndefined(); // idempotent
+  });
+});
+
+describe('InstallsService.pruneInactive', () => {
+  const row = (idHash: string, lastSeenOn: string): UpsertInstall => ({
+    idHash,
+    platform: 'android',
+    appVersion: '0.1.0',
+    store: 'bazaar',
+    lastSeenOn,
+  });
+
+  it('deletes installs last seen before the cutoff and keeps the boundary day', async () => {
+    const { repo, service } = setup('2026-11-10T10:00:00Z');
+    repo.rows.set('old', row('old', '2026-05-13')); // 181 days ago
+    repo.rows.set('edge', row('edge', '2026-05-14')); // exactly 180 days ago
+    repo.rows.set('new', row('new', '2026-11-10'));
+    expect(await service.pruneInactive(180)).toBe(1);
+    expect([...repo.rows.keys()].sort()).toEqual(['edge', 'new']);
+  });
+
+  it('returns 0 when nothing is stale', async () => {
+    const { repo, service } = setup();
+    repo.rows.set('a', row('a', '2026-11-10'));
+    expect(await service.pruneInactive(30)).toBe(0);
   });
 });

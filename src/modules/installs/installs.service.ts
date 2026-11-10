@@ -46,4 +46,13 @@ export class InstallsService {
   async erase(idHash: string): Promise<void> {
     await this.repo.delete(idHash);
   }
+
+  /**
+   * Retention: deletes installs not seen for more than `days` days (profiles cascade).
+   * An install last seen exactly `days` days ago is kept. Returns how many were deleted.
+   */
+  async pruneInactive(days: number): Promise<number> {
+    const cutoff = new Date(this.now().getTime() - days * 86_400_000);
+    return this.repo.deleteLastSeenBefore(day(cutoff));
+  }
 }

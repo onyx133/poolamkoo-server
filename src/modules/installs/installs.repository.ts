@@ -18,6 +18,8 @@ export interface InstallsRepository {
   touchLastSeenOn(idHash: string, day: string): Promise<void>;
   /** Idempotent. Related rows (profile) go with it via ON DELETE CASCADE. */
   delete(idHash: string): Promise<void>;
+  /** Deletes installs whose last_seen_on is before `day` (YYYY-MM-DD); returns how many. */
+  deleteLastSeenBefore(day: string): Promise<number>;
 }
 
 export class PrismaInstallsRepository implements InstallsRepository {
@@ -54,5 +56,13 @@ export class PrismaInstallsRepository implements InstallsRepository {
 
   async delete(idHash: string): Promise<void> {
     await this.prisma.install.deleteMany({ where: { idHash } });
+  }
+
+  async deleteLastSeenBefore(day: string): Promise<number> {
+    // Profiles go with them (ON DELETE CASCADE).
+    const { count } = await this.prisma.install.deleteMany({
+      where: { lastSeenOn: { lt: new Date(day + 'T00:00:00Z') } },
+    });
+    return count;
   }
 }

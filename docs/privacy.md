@@ -6,11 +6,11 @@ PoolamKoo is built so the server can be breached without exposing anything about
 
 | Data | Where | Why | Retention | Erased by |
 |---|---|---|---|---|
-| Install id hash: `HMAC-SHA256(install_id, SERVER_PEPPER)`, 64 hex chars | `installs.id_hash` (primary key) | Recognise a returning install without storing the identifier | Until erased | `DELETE /v1/installs/me` |
-| `platform` (`android`), `app_version`, `store` (`bazaar`, `myket`, `play`, `direct`) | `installs` | Serve a compatible rule pack; know which stores matter | Until erased; refreshed on each registration | same |
-| `created_at` | `installs` | Operational | Until erased | same |
-| `last_seen_on`, **day granularity** (a date, not a timestamp) | `installs` | Count active installs; later clean up dormant ones | Until erased | same |
-| Opt-in profile: `income_band` (B1..B5), `period` (Jalali `YYYY-MM`), `consent_version` | `profiles` (FK to `installs`, `ON DELETE CASCADE`) | Select which offers to show. Only the latest value is kept | Until the user withdraws or erases | `DELETE /v1/installs/me/profile` or the install erase (cascade) |
+| Install id hash: `HMAC-SHA256(install_id, SERVER_PEPPER)`, 64 hex chars | `installs.id_hash` (primary key) | Recognise a returning install without storing the identifier | Until erased, or deleted automatically after `INSTALL_RETENTION_DAYS` (default 180) days without a visit | `DELETE /v1/installs/me` |
+| `platform` (`android`), `app_version`, `store` (`bazaar`, `myket`, `play`, `direct`) | `installs` | Serve a compatible rule pack; know which stores matter | Same as the hash row; refreshed on each registration | same |
+| `created_at` | `installs` | Operational | Same as the hash row | same |
+| `last_seen_on`, **day granularity** (a date, not a timestamp) | `installs` | Count active installs and find dormant ones to delete (retention) | Same as the hash row | same |
+| Opt-in profile: `income_band` (B1..B5), `period` (Jalali `YYYY-MM`), `consent_version` | `profiles` (FK to `installs`, `ON DELETE CASCADE`) | Select which offers to show. Only the latest value is kept | Until the user withdraws or erases; deleted with its install by retention | `DELETE /v1/installs/me/profile` or the install erase (cascade) |
 | Offers, catalog, band table, rule packs | other tables | Published content, not user data | Managed by the operator | n/a |
 
 There is no other table that references an install. Offers are shown without recording impressions, so erasing an install needs only the install row and its cascading profile.
@@ -34,6 +34,7 @@ The raw `install_id` exists only in the body of `POST /v1/installs` while it is 
 ## Erasure and reset
 
 - **Erase** (`DELETE /v1/installs/me`, authenticated): deletes the install row; the profile cascades. The access token stops working at once because authentication checks that the install still exists, so the app re-registers as a fresh install if it continues to use online features. Backups made before the erase can still contain the row until they age out (see the runbook's backup retention).
+- **Retention** (automatic): the API deletes every install whose `last_seen_on` is more than `INSTALL_RETENTION_DAYS` days old (default 180; `0` turns it off) once a day, and the profile goes with it. Operators can run it by hand with `npm run installs:prune -- --days N`. Backups taken before a deletion keep the row until they age out.
 - **Withdraw opt-in** (`DELETE /v1/installs/me/profile`): removes only the profile; idempotent.
 - **Reset install id** (in the app): the app generates a new UUID. The old hash row stays until it is erased, so the app should call erase first. Without that, the old row is orphaned: it can no longer be linked to the device by anyone, and holds only the data listed above.
 - **Pepper rotation** orphans every install row by design (see [ADR 0003](adr/0003-anonymous-installs-and-jwt.md)); the operator then truncates `installs`.
