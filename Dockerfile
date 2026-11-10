@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # ---- build: install all deps, generate the Prisma client, compile TypeScript ----
-FROM node:24-alpine AS build
+FROM node:26-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -15,7 +15,7 @@ RUN npm prune --omit=dev
 
 # ---- migrate: full dependencies incl. the prisma CLI; runs `prisma migrate deploy` ----
 # Used by the one-shot `migrate` service in docker-compose.yml (owner role, not the app role).
-FROM node:24-alpine AS migrate
+FROM node:26-alpine AS migrate
 ENV NODE_ENV=production
 WORKDIR /app
 RUN chown node:node /app
@@ -30,7 +30,7 @@ CMD ["npx", "prisma", "migrate", "deploy"]
 
 # ---- runtime (default target; keep it last) ----
 # Works with `read_only: true` (both compose files set it) plus a tmpfs on /tmp.
-FROM node:24-alpine AS runtime
+FROM node:26-alpine AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
