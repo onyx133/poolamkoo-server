@@ -8,7 +8,7 @@ Someone has to publish catalog updates, rule packs and offers. The usual answer 
 
 ## Decision
 
-The HTTP API is read-mostly and exposes no operator or admin functionality. Content is published with CLIs shipped in the same image (`dist/cli/*`): `catalog:import`, `rulepack:keygen|sign|import`, `offers:import`. They run on the server as one-off containers against the same database, with input files copied over SSH. Each validates its input (Zod for catalog and offers, signature verification for rule packs) and runs in a transaction. Destructive effects need an explicit flag (`--allow-removals`) or are impossible (rule-pack versions only increase).
+The HTTP API is read-mostly and exposes no operator or admin functionality. Content is published with CLIs shipped in the same image (`dist/cli/*`): `bands:import`, `catalog:import`, `rulepack:keygen|sign|import`, `offers:import`, `installs:prune`. They run on the server as one-off containers against the same database, with input files copied over SSH. Each validates its input (Zod for catalog and offers, signature verification for rule packs) and runs in a transaction. Destructive effects need an explicit flag (`--allow-removals`) or are impossible (rule-pack versions only increase).
 
 ## Consequences
 

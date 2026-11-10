@@ -40,11 +40,12 @@ flowchart LR
 ### Request lifecycle
 
 ```
-client -> nginx (TLS, body <= 32k, overwrites X-Forwarded-For, passes X-Request-Id)
+client -> nginx (TLS, limit_req 20 r/s, body <= 32k, overwrites X-Forwarded-For, passes X-Request-Id)
        -> request-id hook (honour valid id, else UUID)
-       -> rate limit (per IP, or per install for authenticated routes)
-       -> body parse (JSON only, <= 16 KiB) + Zod validation (strict objects)
-       -> auth preHandler (JWT verify -> install row exists)      [authenticated routes]
+       -> rate limit (per IP, IPv6 by /64; authenticated routes also per install)
+       -> body parse (JSON only, <= 16 KiB; an empty body is "no body")
+       -> auth preValidation (JWT verify -> install row exists)   [authenticated routes]
+       -> Zod validation (strict objects)
        -> route -> service -> repository -> PostgreSQL
        -> Zod response serialization -> compression (br/gzip > 1 KiB) -> reply
 errors at any step -> single error handler -> application/problem+json with request_id
@@ -52,11 +53,11 @@ errors at any step -> single error handler -> application/problem+json with requ
 
 ## Endpoints
 
-Full details are in [docs/api/contract-v1.md](docs/api/contract-v1.md). Live OpenAPI/Swagger UI: <https://<api-host>:2053/docs>.
+Full details are in [docs/api/contract-v1.md](docs/api/contract-v1.md). Live OpenAPI/Swagger UI: `https://<api-host>:2053/docs` (the production hostname is kept out of this repository).
 
 | Method and path                          | Auth | Purpose                                                                         |
 | ---------------------------------------- | ---- | ------------------------------------------------------------------------------- |
-| `GET /v1/health`                         | no   | Liveness and version                                                            |
+| `GET /v1/health`                         | no   | Liveness, version and a database probe (`503` when the database is down)        |
 | `POST /v1/installs`                      | no   | Register or re-register an install, returns a token (`201` new, `200` existing) |
 | `DELETE /v1/installs/me`                 | yes  | Erase everything stored for the install                                         |
 | `PUT /v1/installs/me/profile`            | yes  | Set the opt-in income band, period and consent version                          |
@@ -120,33 +121,37 @@ npm run db:migrate && npm run db:seed
 npm run dev                     # http://localhost:3000, docs at /docs
 ```
 
-With Docker Compose (Postgres, one-shot migrations, API as the least-privilege role):
+With Docker Compose (Postgres, one-shot migrations, API as the least-privilege role, read-only root filesystem):
 
 ```sh
 docker compose up --build       # API on http://127.0.0.1:3000
+docker compose run --rm --no-deps api node dist/cli/bands-import.js seed/bands.json
+docker compose run --rm --no-deps api node dist/cli/catalog-import.js seed/catalog-seed.json
 ```
 
 `docker-compose.yml` uses development-only passwords and secrets.
 
 ## Configuration
 
-Validated at start-up by `src/config.ts`; the process exits with a readable list of problems if anything is invalid. `.env.example` is the template.
+Validated at start-up by `src/config.ts`; the process exits with a readable list of problems if anything is invalid. `.env.example` is the template. The operator CLIs read only what they use: `DATABASE_URL` (and `DB_POOL_MAX`), plus `RULEPACK_PUBLIC_KEY` for `rulepack:import` and `INSTALL_RETENTION_DAYS` for `installs:prune`; none of them needs the pepper or the JWT secret.
 
-| Variable              | Default                | Description                                                            |
-| --------------------- | ---------------------- | ---------------------------------------------------------------------- |
-| `NODE_ENV`            | `development`          | `development`, `test` or `production`                                  |
-| `HOST`                | `0.0.0.0`              | Listen address                                                         |
-| `PORT`                | `3000`                 | Listen port                                                            |
-| `LOG_LEVEL`           | `info`                 | `fatal` to `trace`, or `silent`                                        |
-| `DATABASE_URL`        | required               | PostgreSQL URL (the API should use the DML-only role)                  |
-| `SERVER_PEPPER`       | required               | >= 32 bytes, base64 or hex; key for install-id HMAC                    |
-| `JWT_SECRET`          | required               | >= 32 bytes, base64 or hex; signs access tokens                        |
-| `JWT_TTL_DAYS`        | `30`                   | Access token lifetime, 1 to 365                                        |
-| `TRUST_PROXY`         | `false`                | `false`, `true`, a hop count (e.g. `1`) or a comma-separated CIDR list |
-| `RULEPACK_PUBLIC_KEY` | unset                  | Base64 raw 32-byte Ed25519 public key, used to verify packs on import  |
-| `RATE_LIMIT_MAX`      | `120`                  | Requests per IP per minute                                             |
-| `DOCS_ENABLED`        | `true`                 | Serve Swagger UI at `/docs`                                            |
-| `APP_VERSION`         | `package.json` version | Reported by `/v1/health` and the OpenAPI document                      |
+| Variable                 | Default                | Description                                                                             |
+| ------------------------ | ---------------------- | --------------------------------------------------------------------------------------- |
+| `NODE_ENV`               | `development`          | `development`, `test` or `production`                                                   |
+| `HOST`                   | `0.0.0.0`              | Listen address                                                                          |
+| `PORT`                   | `3000`                 | Listen port                                                                             |
+| `LOG_LEVEL`              | `info`                 | `fatal` to `trace`, or `silent`                                                         |
+| `DATABASE_URL`           | required               | PostgreSQL URL (the API should use the DML-only role)                                   |
+| `DB_POOL_MAX`            | `10`                   | Maximum pooled database connections (3 s connect timeout)                               |
+| `SERVER_PEPPER`          | required               | >= 32 bytes, canonical base64 or hex; key for install-id HMAC                           |
+| `JWT_SECRET`             | required               | >= 32 bytes, canonical base64 or hex; signs access tokens                               |
+| `JWT_TTL_DAYS`           | `30`                   | Access token lifetime, 1 to 365                                                         |
+| `TRUST_PROXY`            | `false`                | `false`, `true`, a hop count (e.g. `1`) or a comma-separated CIDR list                  |
+| `RULEPACK_PUBLIC_KEY`    | unset                  | Canonical base64 of the raw 32-byte Ed25519 public key; only `rulepack:import` reads it |
+| `RATE_LIMIT_MAX`         | `120`                  | Requests per IP per minute (IPv6 clients per /64)                                       |
+| `INSTALL_RETENTION_DAYS` | `180`                  | Delete installs not seen for this many days (`0` = never)                               |
+| `DOCS_ENABLED`           | `true`                 | Serve Swagger UI at `/docs`                                                             |
+| `APP_VERSION`            | `package.json` version | Reported by `/v1/health` and the OpenAPI document                                       |
 
 ## Tests
 
@@ -163,19 +168,22 @@ Integration tests need no setup: when `TEST_DATABASE_URL` is unset they start a 
 
 There is no admin HTTP API. Build first (`npm run build`); in production they run in the API image (`node dist/cli/<name>.js`).
 
-| Command                                                          | Purpose                                                                           |
-| ---------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `npm run catalog:import -- catalog-seed.json [--allow-removals]` | Validate the catalog (referential integrity), upsert, write a new release         |
-| `npm run rulepack:keygen`                                        | Generate an Ed25519 key pair; private PEM outside the repo, prints the public key |
-| `npm run rulepack:sign -- pack.json --key private.pem`           | Write `pack.json.sig`. Run on the release machine only                            |
-| `npm run rulepack:import -- pack.json pack.json.sig`             | Verify against `RULEPACK_PUBLIC_KEY`, require a higher version, store verbatim    |
-| `npm run offers:import -- offers.json`                           | Replace the offer set in one transaction                                          |
+| Command                                                                      | Purpose                                                                        |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `npm run bands:import -- bands.json`                                         | Publish a new income-band table version (must exceed the current one)          |
+| `npm run catalog:import -- catalog-seed.json [--allow-removals] [--dry-run]` | Validate the catalog (referential integrity), upsert, write a new release      |
+| `npm run rulepack:keygen -- --out <path outside the repo>`                   | Generate an Ed25519 key pair; private PEM to that path, prints the public key  |
+| `npm run rulepack:sign -- pack.json --key private.pem`                       | Write `pack.json.sig`. Run on the release machine only                         |
+| `npm run rulepack:import -- pack.json [pack.json.sig]`                       | Verify against `RULEPACK_PUBLIC_KEY`, require a higher version, store verbatim |
+| `npm run offers:import -- offers.json`                                       | Replace the offer set in one transaction                                       |
+| `npm run installs:prune -- [--days N]`                                       | Delete installs not seen for N days (default `INSTALL_RETENTION_DAYS`)         |
 
+The API runs the same clean-up by itself once a day. `rulepack:keygen` refuses a path inside a git working tree, so choose a directory outside the repository (for example `~/secure/poolamkoo-rulepack.pem`). The first production deploy imports `seed/bands.json` and `seed/catalog-seed.json` with the first two commands (the runtime image contains `seed/`).
 Production usage is in the [runbook](deploy/RUNBOOK.md).
 
 ## Deployment
 
-Production runs on a shared VPS: Docker in safe mode (host networking, loopback binds), behind the host's nginx on HTTPS port 2053 with a Let's Encrypt certificate. Files are in [`deploy/`](deploy): `docker-compose.prod.yml`, `nginx/`, `.env.prod.example`, and [RUNBOOK.md](deploy/RUNBOOK.md) (first deploy, updates, imports, backups, secret rotation, troubleshooting). Rationale: [ADR 0009](docs/adr/0009-shared-vps-deployment.md).
+Production runs on a shared host: Docker in safe mode (host networking, loopback binds), behind the host's nginx on HTTPS port 2053 with a Let's Encrypt certificate. Postgres uses three roles (a bootstrap superuser used only over the container socket, a non-superuser owner for migrations, a DML-only role for the API) and refuses password-less TCP. Files are in [`deploy/`](deploy): `docker-compose.prod.yml`, `nginx/`, `.env.prod.example`, and [RUNBOOK.md](deploy/RUNBOOK.md) (first deploy, updates, imports, backups, secret rotation, troubleshooting). Rationale: [ADR 0009](docs/adr/0009-shared-vps-deployment.md).
 
 ## Security and privacy model
 
@@ -197,7 +205,7 @@ The server stores a keyed hash of a random install id, the platform, app version
 | [0006](docs/adr/0006-catalog-release-snapshots.md)        | Catalog stored normalised, served from release snapshots     |
 | [0007](docs/adr/0007-in-memory-rate-limits-and-caches.md) | In-memory rate limits and caches                             |
 | [0008](docs/adr/0008-problem-details.md)                  | RFC 9457 problem details                                     |
-| [0009](docs/adr/0009-shared-vps-deployment.md)            | Shared VPS deployment, Docker safe mode, port 2053           |
+| [0009](docs/adr/0009-shared-vps-deployment.md)            | Shared-host deployment, Docker safe mode, port 2053          |
 | [0010](docs/adr/0010-testing-strategy.md)                 | Testing strategy                                             |
 
 ## Contributing

@@ -161,7 +161,7 @@ describe('rule packs', () => {
     expect(results.filter((r) => r.status === 'fulfilled')).toHaveLength(stored.length);
     expect(stored.map((r) => r.version)).toContain(6);
     for (const r of results.filter((r) => r.status === 'rejected')) {
-      expect(String((r).reason)).toMatch(/greater than/);
+      expect(String(r.reason)).toMatch(/greater than/);
     }
   });
 

@@ -10,14 +10,15 @@ The server runs on an existing VPS that hosts other services. Port 443 and the h
 
 - Docker runs in "safe mode": `daemon.json` sets `iptables: false`, `ip6tables: false`, `ip-forward: false`, `ip-masq: false` and `bridge: none`. Docker therefore never touches the host's network configuration.
 - Without a bridge, every container uses `network_mode: host` and binds to `127.0.0.1` only (`db` on 5433, `api` on 3100). Images are built with `build.network: host`. Nothing is published to the outside; the only public listener is nginx.
-- The host's existing nginx terminates TLS for the API on a dedicated port, 2053, in a self-contained server block (`deploy/nginx/poolamkoo-api.conf`), with a Let's Encrypt certificate for `<api-host>` issued by the existing acme.sh setup. A port-80 block serves the ACME challenge and redirects.
+- The host's existing nginx terminates TLS for the API on a dedicated port, 2053, in a self-contained server block (`deploy/nginx/poolamkoo-api.conf`), with a Let's Encrypt certificate for the API hostname issued by the existing acme.sh setup. A port-80 block serves the ACME challenge and redirects. The hostname is a `__API_HOST__` placeholder in the committed nginx files and is rendered at install time, so the repository does not publish the server's address. An outer `limit_req` (20 requests/s per client, burst 40, `429`) sits in front of the app's own limits.
 - Port 2053 was chosen because 443 is taken and 2053 is one of the HTTPS ports Cloudflare proxies, so moving behind Cloudflare, or to a real domain, later is a DNS change, not a redesign.
 - The API container is read-only, drops all capabilities, sets `no-new-privileges` and a 256 MB memory limit.
+- Postgres is initialised with `--auth-host=scram-sha-256 --auth-local=trust`: every TCP connection (including loopback, which with host networking any local process can reach) needs a password; only the unix socket inside the db container is trusted. Three roles: a bootstrap superuser used only through that socket, a non-superuser `poolamkoo_owner` that owns the schema and runs migrations, and the DML-only `poolamkoo_app` used by the API.
 
 ## Consequences
 
 - No interference with other services; the blast radius of a mistake here is this project's containers and one nginx file.
-- No container isolation at the network level: containers share the host network namespace, so any local process can reach `127.0.0.1:5433`. The database relies on its password and the least-privilege role, not on network separation.
-- The sslip.io hostname depends on a third-party DNS service; a real domain removes that dependency.
+- No container isolation at the network level: containers share the host network namespace, so any local process can reach `127.0.0.1:5433`. The database relies on its scram-sha-256 passwords and the role split, not on network separation.
+- A wildcard-DNS hostname depends on a third-party DNS service; a real domain removes that dependency.
 - A non-standard port may be blocked by some networks, notably in Iran. The app is offline-first, and the runbook lists relay options.
 - Operations are manual by design (compose commands over SSH); there is no orchestrator.

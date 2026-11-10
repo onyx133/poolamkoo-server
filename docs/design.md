@@ -46,11 +46,13 @@ no clever abstractions, comments only where intent is non-obvious.
 ## Configuration (env, validated)
 
 `NODE_ENV`, `HOST` (default `0.0.0.0`), `PORT` (default 3000), `LOG_LEVEL`,
-`DATABASE_URL`, `SERVER_PEPPER` (≥32 bytes, base64 or hex), `JWT_SECRET` (≥32 bytes),
+`DATABASE_URL`, `DB_POOL_MAX` (default 10), `SERVER_PEPPER` (≥32 bytes, canonical base64 or hex), `JWT_SECRET` (≥32 bytes, same format),
 `JWT_TTL_DAYS` (default 30), `TRUST_PROXY` (false | true | hop count | CIDR list),
-`RULEPACK_PUBLIC_KEY` (base64 raw 32-byte Ed25519 public key — used to *verify* packs on
-import; the private key never reaches the server), `RATE_LIMIT_MAX` (per IP per minute,
-default 120), `DOCS_ENABLED` (default true), `APP_VERSION` (defaults to package.json).
+`RULEPACK_PUBLIC_KEY` (canonical base64 of the raw 32-byte Ed25519 public key — read only by
+`rulepack:import` to *verify* packs; the private key never reaches the server), `RATE_LIMIT_MAX`
+(per IP per minute, default 120), `INSTALL_RETENTION_DAYS` (default 180, 0 = never delete),
+`DOCS_ENABLED` (default true), `APP_VERSION` (defaults to package.json). CLIs load only the
+variables they use (`loadDbConfig` etc.).
 `.env.example` documents all; real `.env` files are gitignored.
 
 ## Data model (PostgreSQL, snake_case tables/columns via `@@map`/`@map`)
@@ -79,8 +81,10 @@ default 120), `DOCS_ENABLED` (default true), `APP_VERSION` (defaults to package.
   `payload bytea` (exact bytes), `signature text` (base64 Ed25519 over payload),
   `sha256`, `created_at`.
 
-DB roles (least privilege): a migrator/owner role runs migrations; the API connects as
-`poolamkoo_app` with only SELECT/INSERT/UPDATE/DELETE on the tables and USAGE on sequences.
+DB roles (least privilege): a bootstrap superuser (`poolamkoo_admin`, socket only) creates two
+non-superuser roles — `poolamkoo_owner` owns the database/schema and runs migrations; the API
+connects as `poolamkoo_app` with only SELECT/INSERT/UPDATE/DELETE on the tables and USAGE on
+sequences. TCP always needs a password (`--auth-host=scram-sha-256`).
 
 ## API behaviour (all under `/v1`, snake_case JSON)
 
@@ -93,15 +97,19 @@ DB roles (least privilege): a migrator/owner role runs migrations; the API conne
   `rate-limited`, `payload-too-large`, `conflict`, `internal`). 5xx never leak internals.
   Unknown routes → 404 problem.
 - Body limit 16 KiB globally (no endpoint needs more). Strict Zod objects (reject unknown
-  keys on requests). JSON only.
-- Rate limits: global per IP (`RATE_LIMIT_MAX`/min); `POST /v1/installs` 10/min per IP;
-  install-scoped routes keyed by JWT `sub` (60/min). `429` with `Retry-After` + problem body.
-- `GET /v1/health` → `{status:"ok", version}`; excluded from rate limit and access logs.
+  keys on requests). JSON only; an empty `application/json` body counts as no body.
+- Rate limits: global per IP (`RATE_LIMIT_MAX`/min, IPv6 clients by /64); `POST /v1/installs`
+  10/min per IP; install-scoped routes keyed by JWT `sub` (60/min) and also counted against the
+  global per-IP limit. Limiters run in `onRequest`, authentication in `preValidation`, so failed
+  attempts are counted and over-limit requests never reach the DB. `429` with `Retry-After` +
+  problem body. nginx adds an outer `limit_req`.
+- `GET /v1/health` → `{status:"ok", version}` after a `SELECT 1` (1 s timeout); database down →
+  `503 {status:"degraded", version}`. Excluded from rate limit and access logs.
 - `POST /v1/installs`: body `{install_id: uuid v4, platform: "android", app_version
   (≤32 chars, semver-ish), store}`. Upsert by HMAC; `201` new / `200` existing; refreshes
   `app_version`, `store`, `last_seen_on`. Returns `{access_token, expires_at}`; JWT
   `sub` = id_hash, `exp` = now + JWT_TTL_DAYS, `iat`, `typ: "install"`.
-- Auth preHandler: verify JWT (`401` problem if missing/invalid/expired), then confirm the
+- Auth (`preValidation`): verify JWT, `exp`/`sub`/`typ` required (`401` problem if missing/invalid/expired), then confirm the
   install row still exists (erased → `401`, so the app re-registers). Touch
   `last_seen_on` at most once per day.
 - `DELETE /v1/installs/me` → delete install (profile cascades) → `204`.
@@ -118,7 +126,8 @@ DB roles (least privilege): a migrator/owner role runs migrations; the API conne
   application/json`, `X-Rule-Pack-Version`, `X-Signature`, `ETag "rulepack-<v>"`,
   `304` on match, `404` problem when none. `app_version` is the Android **versionCode**
   (the app's `RulePackLoader` compares `minAppVersion: Int` against it).
-- Compression br/gzip above 1 KiB. Helmet defaults (CSP relaxed only for `/docs`).
+- Compression br/gzip above 1 KiB. Helmet with a strict CSP for the API (`default-src 'none'`);
+  Swagger UI's own CSP only under `/docs`.
 
 ## Operator CLIs (no admin HTTP surface at all — smaller attack surface)
 
@@ -135,6 +144,10 @@ DB roles (least privilege): a migrator/owner role runs migrations; the API conne
   one transaction and writes a new `catalog_releases` row (version = seed `version`, must
   be greater than the current one).
 - `offers:import <offers.json>` → replaces the offer set in one transaction.
+- `bands:import <bands.json>` → validates (ascending, only the last band unbounded) and inserts a new
+  `band_tables` version that must exceed the current one (advisory lock).
+- `installs:prune [--days N]` → deletes installs not seen for N days (default
+  `INSTALL_RETENTION_DAYS`); the API runs the same clean-up daily in-process.
 - `prisma db seed` → loads `seed/bands.json` and the placeholder catalog if empty.
 
 ## Privacy & security invariants (tests must cover these)

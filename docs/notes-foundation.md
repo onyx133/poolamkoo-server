@@ -26,9 +26,11 @@ or `prisma migrate diff` as in the foundation commit).
    `<name>.routes.ts` (a `FastifyPluginAsyncZod<{ service: ... }>`). Copy `installs` as the template.
 2. Wire it in two places, both marked `WIRE-HERE`: `src/container.ts` (interface + construction)
    and `src/app.ts` (`app.register(xRoutes, { prefix: '/v1', service: container.x })`).
-3. Authenticated routes: `preHandler: app.requireInstall` and
-   `config: { rateLimit: installScopedRateLimit }` (60/min keyed by the verified JWT subject).
-   The install's id hash is `request.install!.idHash`.
+3. Authenticated routes: spread `...installScoped(app)` into the route options (`src/plugins/auth.ts`).
+   It sets `onRequest: app.limitByIp` (global per-IP budget), the per-install limiter (60/min keyed by
+   the verified JWT subject, also in `onRequest`) and `preValidation: app.requireInstall`. Keep
+   authentication out of `onRequest`: it must run after the limiters, so failed attempts are counted
+   and a flood gets 429 without a DB lookup. The install's id hash is `request.install!.idHash`.
 4. Public routes need no extra config (global per-IP limit applies). Per-route limit:
    `config: { rateLimit: { max, timeWindow } }`; opt out with `rateLimit: false`.
 5. Tests: unit-test the service with a fake repository (`test/unit/installs.service.test.ts`),
@@ -95,15 +97,29 @@ Fastify / plugins
 - Logs: only whitelisted request fields are serialized (`method`, `route`, `path` without query);
   `GET /v1/health` is silent. The listen message is overridden so server IPs are not logged either.
 - Request bodies are limited to 16 KiB and only `application/json` is parsed (text/plain parser removed).
+  The JSON parser is Fastify's default except that an empty body parses as `undefined` (bodiless DELETEs
+  that still send `Content-Type: application/json`); routes with a body schema then answer 400.
+- Every `keyGenerator` goes through `ipRateLimitKey` (`src/lib/ip.ts`): IPv4 as is, IPv6 by /64.
+- `/v1/health` pings the database (`SELECT 1`, 1 s) and answers `503 {status:"degraded"}` when it fails;
+  the contract only lists `200`, so this is an additive status for monitoring.
+- Security headers: strict CSP for the API, Swagger UI's `staticCSP` for `/docs` only.
+- Config: `loadConfig` (API), `loadDbConfig` / `loadRulePackCliConfig` / `loadRetentionDays` (CLIs).
+  New variables: `DB_POOL_MAX`, `INSTALL_RETENTION_DAYS`. Secrets must be canonical base64 or hex.
+- Retention: `startRetentionJob` (src/modules/installs/installs.retention.ts) runs from `server.ts`;
+  `installs:prune` is the manual twin. Importers (`catalog`, `rule-packs`, `bands`) serialize with
+  `pg_advisory_xact_lock` (keys 7361001/2/3).
 
 ## Docker / ops
 
-- `docker compose up --build`: postgres:16-alpine (init script creates `poolamkoo_app`), one-shot
+- `docker compose up --build`: postgres:16-alpine (init script creates the non-superuser roles
+  `poolamkoo_owner` and `poolamkoo_app`; the bootstrap superuser is `poolamkoo_admin`), one-shot
   `migrate` (Dockerfile target `migrate`, owner role), then `api` (target `runtime`, role
-  `poolamkoo_app`). The Dockerfile's last stage is `runtime`, so a plain `docker build .` yields the
+  `poolamkoo_app`, read-only root filesystem). The runtime image contains `seed/`, so
+  `docker compose run --rm --no-deps api node dist/cli/bands-import.js seed/bands.json` works.
+  CI has a `smoke` job doing exactly this. The Dockerfile's last stage is `runtime`, so a plain `docker build .` yields the
   API image. The Docker files could not be executed on the authoring machine (no Docker).
 - `deploy/db-init/01-app-role.sh` only runs on first initialisation of the data volume; on an
-  existing database apply the same SQL by hand.
+  existing database apply the same SQL by hand (the RUNBOOK explains how to move a pre-split volume).
 - The seed (`npm run db:seed`) is idempotent, loads `seed/bands.json`, then calls `seedCatalog`
   in `prisma/seed-catalog.ts` (a stub: the catalog engineer fills it in). Seeding needs the owner
   (or any role with INSERT), not necessarily `poolamkoo_app`.
