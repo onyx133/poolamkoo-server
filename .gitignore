@@ -13,3 +13,4 @@ src/generated/
 .vite/
 .claude/
 !.env.prod.example
+docs/server-handover.md
