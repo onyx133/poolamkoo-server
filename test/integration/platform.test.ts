@@ -178,6 +178,19 @@ describe('platform', () => {
   });
 
   describe('docs', () => {
+    it('uses a strict CSP for the API and a relaxed one only under /docs', async () => {
+      const api = await t.app.inject({ method: 'GET', url: '/v1/health' });
+      const csp = String(api.headers['content-security-policy']);
+      expect(csp).toContain("default-src 'none'");
+      expect(csp).toContain("frame-ancestors 'none'");
+      expect(csp).not.toContain("'unsafe-inline'");
+
+      const docs = await t.app.inject({ method: 'GET', url: '/docs/' });
+      expect(docs.statusCode).toBe(200);
+      expect(String(docs.headers['content-security-policy'])).toContain("script-src 'self'");
+      expect(String(docs.headers['content-security-policy'])).not.toContain("default-src 'none'");
+    });
+
     it('serves the OpenAPI document when enabled', async () => {
       const res = await t.app.inject({ method: 'GET', url: '/docs/json' });
       expect(res.statusCode).toBe(200);

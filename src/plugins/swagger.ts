@@ -63,7 +63,9 @@ export const swaggerPlugin = fp<{ config: Config }>(
         return out;
       },
     });
-    await app.register(swaggerUi, { routePrefix: '/docs' });
+    // staticCSP: Swagger UI's own (hash-based) policy, applied to /docs routes only; every other
+    // response keeps the strict policy from security.ts.
+    await app.register(swaggerUi, { routePrefix: '/docs', staticCSP: true });
   },
   { name: 'swagger' },
 );
