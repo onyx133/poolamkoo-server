@@ -1,5 +1,5 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import { installScopedRateLimit } from '../../plugins/auth.js';
+import { installScoped } from '../../plugins/auth.js';
 import { offersResponse } from './offers.schemas.js';
 import type { OffersService } from './offers.service.js';
 
@@ -18,8 +18,7 @@ export const offersRoutes: FastifyPluginAsyncZod<{ service: OffersService }> = a
         security: [{ bearerAuth: [] }],
         response: { 200: offersResponse },
       },
-      onRequest: app.requireInstall,
-      config: { rateLimit: installScopedRateLimit },
+      ...installScoped(app),
     },
     async (request, reply) => {
       reply.header('cache-control', 'private, no-store');

@@ -52,6 +52,13 @@ describe('profile', () => {
       });
     });
 
+    it('accepts the largest int32 consent version', async () => {
+      const { token } = await registerInstall(t.app);
+      const res = await put(bearer(token), profileBody({ consent_version: 2_147_483_647 }));
+      expect(res.statusCode).toBe(204);
+      expect((await t.prisma.profile.findFirstOrThrow()).consentVersion).toBe(2_147_483_647);
+    });
+
     it('keeps one row per install', async () => {
       const a = await registerInstall(t.app);
       const b = await registerInstall(t.app);
@@ -69,6 +76,7 @@ describe('profile', () => {
       ['period month 00', { period: '1405-00' }, 'period'],
       ['period with suffix', { period: '1405-08-01' }, 'period'],
       ['zero consent', { consent_version: 0 }, 'consent_version'],
+      ['consent beyond int32', { consent_version: 2_147_483_648 }, 'consent_version'],
       ['fractional consent', { consent_version: 1.5 }, 'consent_version'],
       ['string consent', { consent_version: '1' }, 'consent_version'],
       ['missing band', { income_band: undefined }, 'income_band'],
@@ -93,6 +101,14 @@ describe('profile', () => {
   });
 
   describe('DELETE /v1/installs/me/profile', () => {
+    it('accepts Content-Type: application/json with an empty body', async () => {
+      const { token } = await registerInstall(t.app);
+      await put(bearer(token), profileBody());
+      const res = await del({ ...bearer(token), 'content-type': 'application/json' });
+      expect(res.statusCode).toBe(204);
+      expect(await t.prisma.profile.count()).toBe(0);
+    });
+
     it('removes the profile and is idempotent', async () => {
       const { token } = await registerInstall(t.app);
       await put(bearer(token), profileBody());

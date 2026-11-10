@@ -160,6 +160,17 @@ describe('installs', () => {
       expect((await erase(bearer(wrongSub))).statusCode).toBe(401);
     });
 
+    it('rejects a validly signed token without an expiry', async () => {
+      const noExp = signTestJwt({ typ: 'install', sub: 'a'.repeat(64) }, t.config.jwtSecret);
+      expect((await erase(bearer(noExp))).statusCode).toBe(401);
+      // Even for an install that exists: a token that never expires is not accepted.
+      const { body } = await registerInstall(t.app);
+      const sub = hmacInstallId(body.install_id, t.config.serverPepper);
+      const forever = signTestJwt({ typ: 'install', sub }, t.config.jwtSecret);
+      expect((await erase(bearer(forever))).statusCode).toBe(401);
+      expect(await t.prisma.install.count()).toBe(1);
+    });
+
     it('rejects a valid token whose install no longer exists', async () => {
       const { token } = await registerInstall(t.app);
       await t.prisma.install.deleteMany();
@@ -168,6 +179,34 @@ describe('installs', () => {
   });
 
   describe('DELETE /v1/installs/me', () => {
+    it('accepts Content-Type: application/json with an empty body (OkHttp style)', async () => {
+      const { token } = await registerInstall(t.app);
+      const res = await erase({ ...bearer(token), 'content-type': 'application/json' });
+      expect(res.statusCode).toBe(204);
+      expect(await t.prisma.install.count()).toBe(0);
+    });
+
+    it('still answers 400 for malformed JSON', async () => {
+      const { token } = await registerInstall(t.app);
+      const res = await t.app.inject({
+        method: 'DELETE',
+        url: '/v1/installs/me',
+        headers: { ...bearer(token), 'content-type': 'application/json' },
+        payload: '{oops',
+      });
+      expect(res.statusCode).toBe(400);
+      expect(res.json()).toMatchObject({ type: 'urn:poolamkoo:problem:validation' });
+    });
+
+    it('still answers 401 before parsing a malformed body', async () => {
+      const res = await t.app.inject({
+        method: 'DELETE',
+        url: '/v1/installs/me',
+        headers: { 'content-type': 'application/json' },
+      });
+      expect(res.statusCode).toBe(401);
+    });
+
     it('erases the install and its profile, and invalidates the token', async () => {
       const { token } = await registerInstall(t.app);
       const [install] = await t.prisma.install.findMany();

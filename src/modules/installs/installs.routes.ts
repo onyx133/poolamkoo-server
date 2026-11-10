@@ -1,5 +1,5 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import { installScopedRateLimit } from '../../plugins/auth.js';
+import { installScoped } from '../../plugins/auth.js';
 import { registerInstallBody, registerInstallResponse } from './installs.schemas.js';
 import type { InstallsService } from './installs.service.js';
 
@@ -32,8 +32,7 @@ export const installsRoutes: FastifyPluginAsyncZod<{ service: InstallsService }>
         summary: 'Erase everything stored for this install',
         security: [{ bearerAuth: [] }],
       },
-      preHandler: app.requireInstall,
-      config: { rateLimit: installScopedRateLimit },
+      ...installScoped(app),
     },
     async (request, reply) => {
       // requireInstall guarantees request.install

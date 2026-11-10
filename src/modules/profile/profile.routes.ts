@@ -2,7 +2,7 @@ import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import { matchesIfNoneMatch } from '../../lib/http-cache.js';
 import { problems } from '../../lib/problem.js';
-import { installScopedRateLimit } from '../../plugins/auth.js';
+import { installScoped } from '../../plugins/auth.js';
 import { bandTableResponse, putProfileBody } from './profile.schemas.js';
 import { bandsEtag, type ProfileService } from './profile.service.js';
 
@@ -23,8 +23,7 @@ export const profileRoutes: FastifyPluginAsyncZod<{ service: ProfileService }> =
         security: [{ bearerAuth: [] }],
         body: putProfileBody,
       },
-      onRequest: app.requireInstall,
-      config: { rateLimit: installScopedRateLimit },
+      ...installScoped(app),
     },
     async (request, reply) => {
       await service.put(request.install!.idHash, request.body);
@@ -41,8 +40,7 @@ export const profileRoutes: FastifyPluginAsyncZod<{ service: ProfileService }> =
         description: 'Idempotent: 204 even when no profile exists.',
         security: [{ bearerAuth: [] }],
       },
-      onRequest: app.requireInstall,
-      config: { rateLimit: installScopedRateLimit },
+      ...installScoped(app),
     },
     async (request, reply) => {
       await service.remove(request.install!.idHash);

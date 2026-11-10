@@ -1,7 +1,8 @@
 import fastifyJwt from '@fastify/jwt';
-import type { FastifyReply, FastifyRequest } from 'fastify';
+import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
 import type { Config } from '../config.js';
+import { ipRateLimitKey } from '../lib/ip.js';
 import { problems } from '../lib/problem.js';
 import type { InstallsService } from '../modules/installs/installs.service.js';
 
@@ -23,7 +24,7 @@ export interface IssuedToken {
 
 declare module 'fastify' {
   interface FastifyInstance {
-    /** preHandler for install-scoped routes: verified JWT + install row exists. */
+    /** preValidation hook for install-scoped routes: verified JWT + install row exists. */
     requireInstall: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
     issueInstallToken: (idHash: string) => IssuedToken;
   }
@@ -54,7 +55,7 @@ export function installRateLimitKey(request: FastifyRequest): string {
       // fall through to IP
     }
   }
-  return request.ip;
+  return ipRateLimitKey(request.ip);
 }
 
 // Route-level rate-limit config for install-scoped routes (60/min per install).
@@ -64,12 +65,27 @@ export const installScopedRateLimit = {
   keyGenerator: installRateLimitKey,
 } as const;
 
+/**
+ * Route options for every install-scoped route. Order matters: both limiters run in onRequest,
+ * before anything touches the database; authentication runs in preValidation, so failed
+ * attempts (bad tokens, erased installs) are already counted and a flood is answered with 429
+ * without a DB lookup. Auth still precedes body validation (401 beats 400).
+ */
+export function installScoped(app: FastifyInstance) {
+  return {
+    onRequest: app.limitByIp,
+    preValidation: app.requireInstall,
+    config: { rateLimit: installScopedRateLimit },
+  } as const;
+}
+
 export const authPlugin = fp<{ config: Config; installs: InstallsService }>(
   async (app, { config, installs }) => {
     await app.register(fastifyJwt, {
       secret: config.jwtSecret,
       sign: { algorithm: 'HS256' },
-      verify: { algorithms: ['HS256'] },
+      // exp/sub/typ must be present: a token without an expiry would never lapse.
+      verify: { algorithms: ['HS256'], requiredClaims: ['exp', 'sub', 'typ'] },
     });
 
     app.decorate('issueInstallToken', (idHash: string): IssuedToken => {

@@ -7,7 +7,8 @@ export const putProfileBody = z.strictObject({
   income_band: z.enum(INCOME_BANDS),
   // Jalali year-month, e.g. 1405-08
   period: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'must look like 1405-08'),
-  consent_version: z.number().int().min(1),
+  // int32: the column is an `integer`; anything larger would be a 500 from the database.
+  consent_version: z.number().int().min(1).max(2_147_483_647),
 });
 export type PutProfileBody = z.infer<typeof putProfileBody>;
 

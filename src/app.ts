@@ -44,6 +44,20 @@ export async function buildApp(
   app.setSerializerCompiler(serializerCompiler);
   // JSON only: drop Fastify's default text/plain parser (unsupported types get a 415).
   app.removeContentTypeParser('text/plain');
+  // Same JSON parser as Fastify's (prototype-poisoning guard, malformed JSON -> 400, 16 KiB
+  // limit), except that an empty body parses as "no body". Clients such as OkHttp send
+  // `Content-Type: application/json` on bodiless DELETEs; routes that need a body still fail
+  // schema validation with a 400.
+  const parseJson = app.getDefaultJsonParser('error', 'error');
+  app.removeContentTypeParser('application/json');
+  app.addContentTypeParser(
+    'application/json',
+    { parseAs: 'string', bodyLimit: BODY_LIMIT_BYTES },
+    (request, body, done) => {
+      if (body.length === 0) return done(null, undefined);
+      void parseJson(request, body as string, done); // parseAs: 'string'
+    },
+  );
 
   // Plugins (order matters: security before the error handler, swagger before routes).
   await app.register(requestIdPlugin);
