@@ -30,8 +30,8 @@ export interface RulePackImportSummary {
 }
 
 /**
- * Verifies the signature over the exact bytes first, then the header ints, then that the
- * version is newer than everything stored, and stores the bytes verbatim.
+ * Verifies the signature over the exact bytes first, then the header ints, then stores the
+ * bytes verbatim if the version is newer than everything stored (checked under a lock).
  */
 export async function importRulePack(
   repo: RulePacksRepository,
@@ -57,15 +57,8 @@ export async function importRulePack(
   }
   const { version, formatVersion, minAppVersion } = header.data;
 
-  const latest = await repo.latestVersion();
-  if (latest !== null && version <= latest) {
-    throw new RulePackImportError(
-      `version ${version} must be greater than the latest stored version (${latest})`,
-    );
-  }
-
   const sha256 = createHash('sha256').update(input.payload).digest('hex');
-  await repo.insert({
+  const result = await repo.insertIfNewer({
     version,
     formatVersion,
     minAppVersion,
@@ -73,5 +66,10 @@ export async function importRulePack(
     signature,
     sha256,
   });
+  if (!result.inserted) {
+    throw new RulePackImportError(
+      `version ${version} must be greater than the latest stored version (${result.latest})`,
+    );
+  }
   return { version, formatVersion, minAppVersion, bytes: input.payload.length, sha256 };
 }

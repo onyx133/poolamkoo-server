@@ -1,6 +1,6 @@
-import type { PrismaClient } from '../../lib/prisma.js';
 import { z } from 'zod';
 import { INCOME_BANDS } from '../profile/profile.schemas.js';
+import type { OffersImportRepository } from './offers.repository.js';
 
 const text = z.string().trim().min(1);
 
@@ -59,22 +59,22 @@ export function parseOffersFile(raw: string): OffersFile {
 }
 
 /** Replaces the whole offer set atomically. Returns how many offers are stored afterwards. */
-export async function replaceOffers(prisma: PrismaClient, file: OffersFile): Promise<number> {
-  await prisma.$transaction([
-    prisma.offer.deleteMany(),
-    prisma.offer.createMany({
-      data: file.offers.map((o) => ({
-        id: o.id,
-        titleFa: o.title_fa,
-        bodyFa: o.body_fa,
-        ctaFa: o.cta_fa,
-        url: o.url,
-        bands: o.bands,
-        startsAt: new Date(o.starts_at),
-        expiresAt: new Date(o.expires_at),
-        active: o.active,
-      })),
-    }),
-  ]);
+export async function replaceOffers(
+  repo: OffersImportRepository,
+  file: OffersFile,
+): Promise<number> {
+  await repo.replaceAll(
+    file.offers.map((o) => ({
+      id: o.id,
+      titleFa: o.title_fa,
+      bodyFa: o.body_fa,
+      ctaFa: o.cta_fa,
+      url: o.url,
+      bands: o.bands,
+      startsAt: new Date(o.starts_at),
+      expiresAt: new Date(o.expires_at),
+      active: o.active,
+    })),
+  );
   return file.offers.length;
 }

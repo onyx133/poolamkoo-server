@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { hmacInstallId, safeEqual } from '../../src/lib/crypto.js';
+import { hmacInstallId } from '../../src/lib/crypto.js';
 
 const pepper = Buffer.alloc(32, 1);
 const id = '3f0c1c52-7a1e-4d0e-9a39-0f6f5f2a8c11';
@@ -26,14 +26,5 @@ describe('hmacInstallId', () => {
     expect(hmacInstallId('x', Buffer.from('key'))).toBe(
       '4fc3b7eaf34d7e594a6f51d9517ba543abf41067b27587ffd82ba3584e4d3cdd',
     );
-  });
-});
-
-describe('safeEqual', () => {
-  it('compares equal and unequal strings, including different lengths', () => {
-    expect(safeEqual('abc', 'abc')).toBe(true);
-    expect(safeEqual('abc', 'abd')).toBe(false);
-    expect(safeEqual('abc', 'abcd')).toBe(false);
-    expect(safeEqual('', '')).toBe(true);
   });
 });

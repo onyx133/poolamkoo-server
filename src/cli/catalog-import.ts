@@ -1,9 +1,10 @@
 import { readFile } from 'node:fs/promises';
 import { parseArgs } from 'node:util';
+import { loadDbConfig } from '../config.js';
 import { createPrisma } from '../lib/prisma.js';
 import { formatSummary, importCatalog } from '../modules/catalog/catalog.importer.js';
 import { PrismaCatalogRepository } from '../modules/catalog/catalog.repository.js';
-import { CliError, requireEnv, runIfMain } from './common.js';
+import { CliError, runIfMain } from './common.js';
 
 const USAGE = 'Usage: npm run catalog:import -- <file> [--allow-removals] [--dry-run]';
 
@@ -28,7 +29,8 @@ export async function run(argv: string[], env: NodeJS.ProcessEnv = process.env):
     );
   }
 
-  const prisma = createPrisma(requireEnv(env, 'DATABASE_URL'));
+  const db = loadDbConfig(env);
+  const prisma = createPrisma(db.databaseUrl, { poolMax: db.dbPoolMax });
   try {
     const summary = await importCatalog(new PrismaCatalogRepository(prisma), raw, {
       allowRemovals: values['allow-removals'],

@@ -16,6 +16,7 @@ import {
   RulePackImportError,
 } from '../../src/modules/rule-packs/rule-packs.importer.js';
 import type {
+  InsertRulePackResult,
   NewRulePack,
   RulePacksRepository,
   StoredRulePack,
@@ -26,14 +27,13 @@ class FakeRepo implements RulePacksRepository {
   latestFor(): Promise<StoredRulePack | null> {
     return Promise.resolve(null);
   }
-  latestVersion(): Promise<number | null> {
-    return Promise.resolve(
-      this.rows.reduce<number | null>((m, r) => Math.max(m ?? 0, r.version), null),
-    );
-  }
-  insert(pack: NewRulePack): Promise<void> {
+  insertIfNewer(pack: NewRulePack): Promise<InsertRulePackResult> {
+    const latest = this.rows.reduce<number | null>((m, r) => Math.max(m ?? 0, r.version), null);
+    if (latest !== null && pack.version <= latest) {
+      return Promise.resolve({ inserted: false, latest });
+    }
     this.rows.push(pack);
-    return Promise.resolve();
+    return Promise.resolve({ inserted: true });
   }
 }
 

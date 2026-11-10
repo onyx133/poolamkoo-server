@@ -5,7 +5,8 @@ import { join } from 'node:path';
 import { inject, afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import type { IncomeBand } from '../../src/generated/prisma/client.js';
 import { parseOffersFile, replaceOffers } from '../../src/modules/offers/offers.import.js';
-import { buildTestApp, TEST_ENV, type TestApp } from '../helpers/build-test-app.js';
+import { PrismaOffersRepository } from '../../src/modules/offers/offers.repository.js';
+import { buildTestApp, type TestApp } from '../helpers/build-test-app.js';
 import { resetDb } from '../helpers/db.js';
 import { bearer, registerInstall } from '../helpers/fixtures.js';
 
@@ -170,7 +171,7 @@ describe('offers', () => {
           ],
         }),
       );
-      expect(await replaceOffers(t.prisma, file)).toBe(2);
+      expect(await replaceOffers(new PrismaOffersRepository(t.prisma), file)).toBe(2);
 
       const rows = await t.prisma.offer.findMany({ orderBy: { id: 'asc' } });
       expect(rows.map((r) => r.id)).toEqual(['new_1', 'new_2']);
@@ -187,7 +188,9 @@ describe('offers', () => {
       await createOffer({ id: 'keep' });
       // Bypass file validation to force a database error (http:// violates the CHECK).
       const bad = { offers: [{ ...offer(), url: 'http://example.com/x', active: true }] };
-      await expect(replaceOffers(t.prisma, bad as never)).rejects.toThrow();
+      await expect(
+        replaceOffers(new PrismaOffersRepository(t.prisma), bad as never),
+      ).rejects.toThrow();
       expect((await t.prisma.offer.findMany()).map((r) => r.id)).toEqual(['keep']);
     });
 
@@ -205,7 +208,8 @@ describe('offers', () => {
         return spawnSync(process.execPath, ['--import', 'tsx', 'src/cli/offers-import.ts', arg], {
           cwd: process.cwd(),
           encoding: 'utf8',
-          env: { ...process.env, ...TEST_ENV, DATABASE_URL: inject('testDatabaseUrl') },
+          // Only the database URL: the CLI must not need the pepper or the JWT secret.
+          env: { ...process.env, DATABASE_URL: inject('testDatabaseUrl') },
         });
       };
 

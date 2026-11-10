@@ -24,9 +24,3 @@ export function runIfMain(metaUrl: string, main: () => Promise<void>): void {
     },
   );
 }
-
-export function requireEnv(env: NodeJS.ProcessEnv, name: string): string {
-  const value = env[name];
-  if (!value) throw new CliError(`${name} is not set`);
-  return value;
-}

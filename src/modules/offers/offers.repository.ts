@@ -10,6 +10,18 @@ export interface OfferRecord {
   expiresAt: Date;
 }
 
+export interface NewOffer extends OfferRecord {
+  bands: IncomeBand[];
+  startsAt: Date;
+  active: boolean;
+}
+
+/** Write side used by `offers:import`. */
+export interface OffersImportRepository {
+  /** Replaces the whole offer set atomically; all-or-nothing. */
+  replaceAll(offers: NewOffer[]): Promise<void>;
+}
+
 export interface OffersRepository {
   /** The install's income band, or null when it has no profile. */
   findBand(idHash: string): Promise<IncomeBand | null>;
@@ -17,7 +29,7 @@ export interface OffersRepository {
   findActive(band: IncomeBand, now: Date, limit: number): Promise<OfferRecord[]>;
 }
 
-export class PrismaOffersRepository implements OffersRepository {
+export class PrismaOffersRepository implements OffersRepository, OffersImportRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
   async findBand(idHash: string): Promise<IncomeBand | null> {
@@ -42,5 +54,12 @@ export class PrismaOffersRepository implements OffersRepository {
         expiresAt: true,
       },
     });
+  }
+
+  async replaceAll(offers: NewOffer[]): Promise<void> {
+    await this.prisma.$transaction([
+      this.prisma.offer.deleteMany(),
+      this.prisma.offer.createMany({ data: offers }),
+    ]);
   }
 }

@@ -150,6 +150,21 @@ describe('rule packs', () => {
     expect(await t.prisma.rulePack.count()).toBe(1);
   });
 
+  it('serializes concurrent imports: the same version is stored exactly once', async () => {
+    const results = await Promise.allSettled(
+      [pack(5, 0), pack(5, 1), pack(5, 2), pack(4, 0), pack(6, 0)].map((p) => publish(p)),
+    );
+    const stored = await t.prisma.rulePack.findMany({ orderBy: { version: 'asc' } });
+    // Whatever the interleaving, versions are unique and each accepted import was newer than
+    // everything stored when it ran.
+    expect(new Set(stored.map((r) => r.version)).size).toBe(stored.length);
+    expect(results.filter((r) => r.status === 'fulfilled')).toHaveLength(stored.length);
+    expect(stored.map((r) => r.version)).toContain(6);
+    for (const r of results.filter((r) => r.status === 'rejected')) {
+      expect(String((r).reason)).toMatch(/greater than/);
+    }
+  });
+
   it('stores the metadata columns and sha256', async () => {
     await publish(pack(7, 42));
     const row = await t.prisma.rulePack.findUniqueOrThrow({ where: { version: 7 } });
