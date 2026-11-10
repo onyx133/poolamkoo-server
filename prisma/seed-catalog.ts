@@ -1,8 +1,17 @@
+import { readFile } from 'node:fs/promises';
 import type { PrismaClient } from '../src/lib/prisma.js';
+import { formatSummary, importCatalog } from '../src/modules/catalog/catalog.importer.js';
+import { PrismaCatalogRepository } from '../src/modules/catalog/catalog.repository.js';
 
-// HOOK for the catalog engineer: load seed/catalog-seed.json here, only when the catalog is
-// empty (no catalog_releases row), by reusing the same import code as `catalog:import`.
-// prisma/seed.ts already calls this after seeding the band table.
-export async function seedCatalog(_prisma: PrismaClient): Promise<void> {
-  console.log('catalog: seeding not implemented yet (see prisma/seed-catalog.ts)');
+// Loads seed/catalog-seed.json through the same import code as `catalog:import`, but only when
+// no catalog release exists yet. Later versions are published with `npm run catalog:import`.
+export async function seedCatalog(prisma: PrismaClient): Promise<void> {
+  const existing = await prisma.catalogRelease.findFirst({ select: { version: true } });
+  if (existing) {
+    console.log(`catalog: release ${existing.version} already present, skipping`);
+    return;
+  }
+  const raw = await readFile(new URL('../seed/catalog-seed.json', import.meta.url), 'utf8');
+  const summary = await importCatalog(new PrismaCatalogRepository(prisma), JSON.parse(raw));
+  console.log(formatSummary(summary));
 }
