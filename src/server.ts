@@ -8,7 +8,7 @@ const SHUTDOWN_TIMEOUT_MS = 10_000;
 
 async function main(): Promise<void> {
   const config = loadConfig();
-  const prisma = createPrisma(config.databaseUrl);
+  const prisma = createPrisma(config.databaseUrl, { poolMax: config.dbPoolMax });
   const app = await buildApp(createContainer(config, prisma), config);
 
   let shuttingDown = false;

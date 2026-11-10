@@ -2,6 +2,7 @@ import type { Config } from './config.js';
 import type { PrismaClient } from './lib/prisma.js';
 import { PrismaCatalogRepository } from './modules/catalog/catalog.repository.js';
 import { CatalogService } from './modules/catalog/catalog.service.js';
+import { PrismaHealthRepository } from './modules/health/health.repository.js';
 import { HealthService } from './modules/health/health.service.js';
 import { PrismaOffersRepository } from './modules/offers/offers.repository.js';
 import { OffersService } from './modules/offers/offers.service.js';
@@ -40,7 +41,10 @@ export function createContainer(
   });
 
   return {
-    health: new HealthService(config.appVersion),
+    health: new HealthService({
+      version: config.appVersion,
+      repo: new PrismaHealthRepository(prisma),
+    }),
     installs,
     profile: new ProfileService(new PrismaProfileRepository(prisma)),
     offers: new OffersService({ repo: new PrismaOffersRepository(prisma) }),

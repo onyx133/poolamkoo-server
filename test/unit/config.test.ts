@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { ConfigError, loadConfig } from '../../src/config.js';
+import {
+  ConfigError,
+  loadConfig,
+  loadDbConfig,
+  loadRetentionDays,
+  loadRulePackCliConfig,
+} from '../../src/config.js';
 
 const base = {
   DATABASE_URL: 'postgresql://u:p@localhost:5432/db',
@@ -18,7 +24,8 @@ describe('loadConfig', () => {
       trustProxy: false,
       rateLimitMax: 120,
       docsEnabled: true,
-      rulepackPublicKey: undefined,
+      dbPoolMax: 10,
+      installRetentionDays: 180,
     });
     expect(c.appVersion).toMatch(/^\d+\.\d+\.\d+/);
   });
@@ -67,21 +74,71 @@ describe('loadConfig', () => {
     expect(() => loadConfig({ ...base, DOCS_ENABLED: 'yes' })).toThrow(/DOCS_ENABLED/);
   });
 
-  it('validates the rule-pack public key length', () => {
-    const key = Buffer.alloc(32, 1).toString('base64');
-    expect(loadConfig({ ...base, RULEPACK_PUBLIC_KEY: key }).rulepackPublicKey).toHaveLength(32);
-    expect(() => loadConfig({ ...base, RULEPACK_PUBLIC_KEY: 'AAAA' })).toThrow(
-      /RULEPACK_PUBLIC_KEY/,
-    );
+  it('rejects secrets that are not canonical base64 or hex', () => {
+    const good = Buffer.alloc(32, 7).toString('base64');
+    expect(loadConfig({ ...base, JWT_SECRET: good }).jwtSecret).toHaveLength(32);
+    for (const bad of [
+      good.replace(/=+$/, ''), // padding stripped
+      `${good}!!`, // junk characters
+      good.slice(0, -2) + '*=', // non-alphabet character
+      Buffer.alloc(32, 7).toString('base64url') + '-', // url-safe alphabet
+      `${'a'.repeat(63)}`, // odd-length hex that is not base64 either
+    ]) {
+      expect(() => loadConfig({ ...base, JWT_SECRET: bad }), bad).toThrow(/JWT_SECRET/);
+      expect(() => loadConfig({ ...base, SERVER_PEPPER: bad }), bad).toThrow(/SERVER_PEPPER/);
+    }
   });
 
+  it('parses pool size and retention', () => {
+    expect(loadConfig({ ...base, DB_POOL_MAX: '4', INSTALL_RETENTION_DAYS: '0' })).toMatchObject({
+      dbPoolMax: 4,
+      installRetentionDays: 0,
+    });
+    expect(() => loadConfig({ ...base, DB_POOL_MAX: '0' })).toThrow(/DB_POOL_MAX/);
+    expect(() => loadConfig({ ...base, INSTALL_RETENTION_DAYS: '-1' })).toThrow(
+      /INSTALL_RETENTION_DAYS/,
+    );
+  });
   it('treats empty strings as unset', () => {
-    const c = loadConfig({ ...base, APP_VERSION: '', RULEPACK_PUBLIC_KEY: '', PORT: '' });
+    const c = loadConfig({ ...base, APP_VERSION: '', PORT: '' });
     expect(c.port).toBe(3000);
-    expect(c.rulepackPublicKey).toBeUndefined();
   });
 
   it('honours APP_VERSION', () => {
     expect(loadConfig({ ...base, APP_VERSION: '9.9.9' }).appVersion).toBe('9.9.9');
+  });
+});
+
+describe('CLI configs', () => {
+  const url = { DATABASE_URL: 'postgresql://u:p@localhost:5432/db' };
+
+  it('loadDbConfig needs only DATABASE_URL', () => {
+    expect(loadDbConfig(url)).toEqual({ databaseUrl: url.DATABASE_URL, dbPoolMax: 10 });
+    expect(() => loadDbConfig({})).toThrow(ConfigError);
+  });
+
+  it('loadRulePackCliConfig requires exactly 32 raw bytes in canonical base64', () => {
+    const key = Buffer.alloc(32, 1).toString('base64');
+    expect(loadRulePackCliConfig({ ...url, RULEPACK_PUBLIC_KEY: key }).rulepackPublicKey).toEqual(
+      Buffer.alloc(32, 1),
+    );
+    for (const bad of [
+      'AAAA',
+      key.replace(/=+$/, ''),
+      Buffer.alloc(33, 1).toString('base64'),
+      Buffer.alloc(31, 1).toString('base64'),
+      `${key}
+`,
+    ]) {
+      expect(() => loadRulePackCliConfig({ ...url, RULEPACK_PUBLIC_KEY: bad }), bad).toThrow(
+        /RULEPACK_PUBLIC_KEY/,
+      );
+    }
+    expect(() => loadRulePackCliConfig(url)).toThrow(/RULEPACK_PUBLIC_KEY/);
+  });
+
+  it('loadRetentionDays defaults to 180', () => {
+    expect(loadRetentionDays({})).toBe(180);
+    expect(loadRetentionDays({ INSTALL_RETENTION_DAYS: '30' })).toBe(30);
   });
 });

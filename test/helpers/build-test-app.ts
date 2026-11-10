@@ -26,10 +26,12 @@ export interface TestAppOptions {
   /** Extra/override env, e.g. { RATE_LIMIT_MAX: '2' }. */
   env?: Record<string, string>;
   logStream?: Writable;
+  /** Override the database URL (e.g. an unreachable one). */
+  databaseUrl?: string;
 }
 
 export async function buildTestApp(options: TestAppOptions = {}): Promise<TestApp> {
-  const databaseUrl = inject('testDatabaseUrl');
+  const databaseUrl = options.databaseUrl ?? inject('testDatabaseUrl');
   const config = loadConfig({ ...TEST_ENV, DATABASE_URL: databaseUrl, ...options.env });
   const prisma = createPrisma(databaseUrl);
   const app = await buildApp(createContainer(config, prisma), config, {
