@@ -90,3 +90,44 @@ jobs:
           target: migrate
           push: false
           cache-from: type=gha
+
+  smoke:
+    name: Smoke (docker compose)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build images
+        run: docker compose build
+      # db -> migrate (owner role) -> api (app role, read-only root filesystem, see compose file)
+      - name: Start db, migrate and api
+        run: docker compose up -d api
+      - name: Wait for /v1/health
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:3000/v1/health; then echo; exit 0; fi
+            sleep 2
+          done
+          docker compose ps
+          docker compose logs
+          exit 1
+      - name: Api runs with a read-only root filesystem
+        run: |
+          test "$(docker inspect --format '{{.HostConfig.ReadonlyRootfs}}' "$(docker compose ps -q api)")" = true
+      - name: Import bands and catalog (as on the first production deploy)
+        run: |
+          docker compose run --rm --no-deps api node dist/cli/bands-import.js seed/bands.json
+          docker compose run --rm --no-deps api node dist/cli/catalog-import.js seed/catalog-seed.json
+      - name: Check the published endpoints
+        run: |
+          code=$(curl -sS -D catalog.headers -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/v1/catalog)
+          test "$code" = 200
+          grep -i '^etag: "catalog-' catalog.headers
+          curl -fsS http://127.0.0.1:3000/v1/profile/bands | grep -q '"version":1'
+          curl -fsS http://127.0.0.1:3000/v1/health | grep -q '"status":"ok"'
+      - name: Logs
+        if: failure()
+        run: docker compose logs
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
