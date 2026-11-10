@@ -25,6 +25,7 @@
     "rulepack:sign": "node dist/cli/rulepack-sign.js",
     "rulepack:import": "node dist/cli/rulepack-import.js",
     "catalog:import": "node dist/cli/catalog-import.js",
+    "bands:import": "node dist/cli/bands-import.js",
     "offers:import": "node dist/cli/offers-import.js",
     "installs:prune": "node dist/cli/installs-prune.js"
   },

@@ -1,4 +1,5 @@
 import type { PrismaClient } from '../../lib/prisma.js';
+import type { BandsImportRepository, InsertBandTableResult } from './bands.importer.js';
 import { bandTableResponse, type BandTable, type PutProfileBody } from './profile.schemas.js';
 
 export interface ProfileRepository {
@@ -10,7 +11,10 @@ export interface ProfileRepository {
   latestBandTable(): Promise<BandTable | null>;
 }
 
-export class PrismaProfileRepository implements ProfileRepository {
+// Arbitrary constant for pg_advisory_xact_lock; one per importer (catalog uses 7_361_001).
+const BANDS_IMPORT_LOCK_KEY = 7_361_003;
+
+export class PrismaProfileRepository implements ProfileRepository, BandsImportRepository {
   constructor(private readonly prisma: PrismaClient) {}
 
   async upsert(idHash: string, profile: PutProfileBody): Promise<void> {
@@ -37,6 +41,23 @@ export class PrismaProfileRepository implements ProfileRepository {
       version: row.version,
       currency: row.currency,
       bands: row.bands,
+    });
+  }
+
+  async insertBandTableIfNewer(table: BandTable): Promise<InsertBandTableResult> {
+    return this.prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(${BANDS_IMPORT_LOCK_KEY})`;
+      const latest = await tx.bandTable.findFirst({
+        orderBy: { version: 'desc' },
+        select: { version: true },
+      });
+      if (latest && table.version <= latest.version) {
+        return { inserted: false, latest: latest.version };
+      }
+      await tx.bandTable.create({
+        data: { version: table.version, currency: table.currency, bands: table.bands },
+      });
+      return { inserted: true };
     });
   }
 }

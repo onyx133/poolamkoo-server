@@ -1,39 +1,12 @@
 import 'dotenv/config';
 import { readFile } from 'node:fs/promises';
-import { z } from 'zod';
 import { createPrisma, type PrismaClient } from '../src/lib/prisma.js';
+import { parseBandsFile } from '../src/modules/profile/bands.importer.js';
 import { seedCatalog } from './seed-catalog.js';
-
-const bandsFile = z.object({
-  version: z.number().int().min(1),
-  currency: z.literal('IRR'),
-  bands: z
-    .array(
-      z.object({
-        key: z.enum(['B1', 'B2', 'B3', 'B4', 'B5']),
-        max_monthly_net_income: z.number().int().positive().nullable(),
-      }),
-    )
-    .min(1),
-});
 
 async function seedBands(prisma: PrismaClient): Promise<void> {
   const raw = await readFile(new URL('../seed/bands.json', import.meta.url), 'utf8');
-  const file = bandsFile.parse(JSON.parse(raw));
-
-  // Ascending, and only the last band may be unbounded.
-  file.bands.forEach((band, i) => {
-    const next = file.bands[i + 1];
-    const last = i === file.bands.length - 1;
-    if ((band.max_monthly_net_income === null) !== last) {
-      throw new Error(`bands.json: only the last band may be null (band ${band.key})`);
-    }
-    if (next && band.max_monthly_net_income !== null && next.max_monthly_net_income !== null) {
-      if (next.max_monthly_net_income <= band.max_monthly_net_income) {
-        throw new Error(`bands.json: bands must be ascending (${band.key} -> ${next.key})`);
-      }
-    }
-  });
+  const file = parseBandsFile(JSON.parse(raw));
 
   // Versions are immutable once published: seed a version only if it does not exist yet.
   const existing = await prisma.bandTable.findUnique({ where: { version: file.version } });
